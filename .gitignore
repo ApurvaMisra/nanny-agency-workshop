@@ -13,3 +13,4 @@ traces/*.jsonl
 baml_client/
 phoenix_data/
 .cache/
+.DS_Store
