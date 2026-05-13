@@ -1,0 +1,291 @@
+{
+  "nannies": [
+    {
+      "id": "n_01",
+      "name": "Maria Gonzalez",
+      "years_experience": 8,
+      "certifications": [
+        "Infant CPR and First Aid Certified"
+      ],
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "availability_days": [
+        "sat",
+        "sun"
+      ],
+      "pet_friendly": true,
+      "special_skills": [],
+      "bio": "Dedicated and nurturing bilingual nanny with over 8 years of experience caring for children from infancy to school age. Skilled in creating a safe, engaging, and educational environment for children while providing support to families. Committed to fostering positive relationships with children and parents alike."
+    },
+    {
+      "id": "n_02",
+      "name": "Emily Johnson",
+      "years_experience": 3,
+      "certifications": [
+        "CPR and First Aid Certified, American Red Cross, August 2021",
+        "Child Development Associate (CDA) Credential, Council for Professional Recognition, May 2020"
+      ],
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "availability_days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri"
+      ],
+      "pet_friendly": false,
+      "special_skills": [
+        "Creating age-appropriate educational activities",
+        "Fostering cognitive, emotional, and physical development",
+        "Communicating with parents about child progress"
+      ],
+      "bio": "Dedicated and nurturing nanny with a degree in Early Childhood Education and over three years of experience specializing in the care and development of toddlers aged 1-3 years. Committed to providing a safe, engaging, and stimulating environment that fosters growth and learning."
+    },
+    {
+      "id": "n_03",
+      "name": "Emily Chen",
+      "years_experience": 12,
+      "certifications": [
+        "CPR and First Aid Certification, American Red Cross, 2022",
+        "Child Development Associate (CDA) Credential, Council for Professional Recognition, 2018"
+      ],
+      "languages": [
+        "Mandarin",
+        "English"
+      ],
+      "availability_days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat"
+      ],
+      "pet_friendly": false,
+      "special_skills": [
+        "bilingual approach to early language development",
+        "creating structured daily routines",
+        "managing multiple children"
+      ],
+      "bio": "Dedicated and nurturing nanny with over twelve years of experience caring for children of various ages, including infants, toddlers, and school-aged children. Proven ability to create a safe, stimulating, and loving environment for children. Committed to promoting children's social, emotional, and physical development through engaging activities and positive reinforcement."
+    },
+    {
+      "id": "n_04",
+      "name": "Emily Johnson",
+      "years_experience": 6,
+      "certifications": [
+        "CPR and First Aid Certified, American Heart Association, 2020",
+        "Medication Administration Certification, State Nursing Board, 2019"
+      ],
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "availability_days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri"
+      ],
+      "pet_friendly": false,
+      "special_skills": [
+        "special needs care",
+        "infant care",
+        "educational activities",
+        "therapeutic play"
+      ],
+      "bio": "Dedicated and compassionate former NICU nurse with over six years of experience as a private nanny, specializing in the care of infants and children with special needs. Proven ability to create safe, nurturing environments while fostering developmental growth. Committed to providing high-quality care with a focus on health, safety, and well-being."
+    },
+    {
+      "id": "n_05",
+      "name": "Emily Carter",
+      "years_experience": 2,
+      "certifications": [
+        "CPR and First Aid Certified, American Red Cross, June 2022",
+        "Child Development Associate (CDA) Credential, Council for Professional Recognition, April 2023"
+      ],
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "availability_days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri"
+      ],
+      "pet_friendly": true,
+      "special_skills": [
+        "art",
+        "music",
+        "creative workshops"
+      ],
+      "bio": "Dedicated and creative nanny with a strong background in art and music, offering two years of hands-on experience caring for children aged 4 to 10. Passionate about fostering a nurturing environment where children can explore their creativity through artistic and musical activities."
+    }
+  ],
+  "parents": [
+    {
+      "id": "p_01",
+      "family_name": "Johnson",
+      "children": [
+        {
+          "age_years": 0.5,
+          "needs_nap": true,
+          "notes": "6-month-old baby girl"
+        }
+      ],
+      "schedule_days": [
+        "mon",
+        "wed",
+        "fri"
+      ],
+      "schedule_hours_per_day": 8,
+      "must_haves": [
+        "CPR-certified nanny",
+        "Experience with infants",
+        "Flexibility to adapt to feeding and nap schedules",
+        "Strong communication skills"
+      ],
+      "nice_to_haves": [
+        "Previous experience with first-time parents",
+        "Knowledge of infant developmental milestones",
+        "Willingness to engage in play and educational activities"
+      ],
+      "neighborhood": "Eastside",
+      "notes": "We are first-time parents looking for a nanny to help care for our 6-month-old baby girl. Both my partner and I work hybrid schedules, going into the office on Tuesdays and Thursdays, and need someone reliable to care for our little one on the days we are home. We are feeling quite anxious about leaving her with someone new, as this is our first experience with childcare outside of family. It\u2019s important for us to find someone who is not only CPR-certified but also has experience specifically with infants, as we want to ensure our baby is safe and well cared for. We would prefer a nanny who understands the unique needs of a young child and can follow her feeding and nap routines. We would love a caregiver who can also engage her in age-appropriate activities to support her development. Ideally, we are looking for someone who can communicate openly with us about our baby's progress and any concerns that may arise. We do not have any pets, so allergies should not be an issue. We would appreciate someone who is patient and can help ease our worries as we navigate this new chapter in our lives. Thank you for your assistance!"
+    },
+    {
+      "id": "p_02",
+      "family_name": "Thompson",
+      "children": [
+        {
+          "age_years": 3.0,
+          "needs_nap": true,
+          "notes": "Twins who are quite active and love imaginative play."
+        },
+        {
+          "age_years": 3.0,
+          "needs_nap": true,
+          "notes": "Twins who are quite active and love imaginative play."
+        }
+      ],
+      "schedule_days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri"
+      ],
+      "schedule_hours_per_day": 10,
+      "must_haves": [
+        "Experience with toddlers, especially twins.",
+        "Must love and be comfortable around dogs (we have a friendly golden retriever).",
+        "CPR and First Aid certified.",
+        "Ability to engage and entertain active toddlers with educational and fun activities."
+      ],
+      "nice_to_haves": [
+        "Background in early childhood education or child development.",
+        "Bilingual (preferably Spanish) to help expose our children to another language.",
+        "Cooking skills to prepare healthy meals and snacks for the kids."
+      ],
+      "neighborhood": "Eastside",
+      "notes": "We are a busy family with little downtime, so we are looking for a nurturing, patient, and energetic nanny who can keep up with our twins. They love to play outdoors, so a willingness to take them to parks or engage in outdoor activities is important. Our golden retriever, Max, is part of our family, and we need someone who is comfortable with dogs and can help with feeding and occasional walks. We appreciate a caregiver who can establish a routine but also be flexible with changing schedules."
+    },
+    {
+      "id": "p_03",
+      "family_name": "Thompson",
+      "children": [
+        {
+          "age_years": 5.0,
+          "needs_nap": false,
+          "notes": "Mia is an energetic child who loves to play outside, do arts and crafts, and read stories. She has a mild peanut allergy, so it\u2019s crucial that the nanny is knowledgeable about food allergies and can ensure her safety during snack and meal times."
+        }
+      ],
+      "schedule_days": [
+        "mon",
+        "wed",
+        "fri"
+      ],
+      "schedule_hours_per_day": 4,
+      "must_haves": [
+        "Experience with preschool-aged children",
+        "Ability to pick up child from school at 3 PM",
+        "Knowledge of how to handle mild food allergies, specifically peanut allergy",
+        "First aid and CPR certified"
+      ],
+      "nice_to_haves": [
+        "Background in early childhood education",
+        "Ability to help with light homework and educational activities",
+        "Experience with outdoor play and creative activities",
+        "Comfortable with pets (we have a small dog)"
+      ],
+      "neighborhood": "Eastside",
+      "notes": "I am a single parent working full-time, and I need someone reliable to pick up my 5-year-old daughter, Mia, from school and care for her until I finish work. Flexibility is important, as there may be occasional requests for additional hours or coverage on other days, depending on my work schedule. Overall, I am looking for a caring and responsible individual who can be a positive influence in Mia's life."
+    },
+    {
+      "id": "p_04",
+      "family_name": "Martinez",
+      "children": [
+        {
+          "age_years": 7.0,
+          "needs_nap": false,
+          "notes": "Sofia loves to play games and engage in creative activities."
+        },
+        {
+          "age_years": 2.0,
+          "needs_nap": true,
+          "notes": "Mateo is still napping during that time."
+        }
+      ],
+      "schedule_days": [
+        "sat"
+      ],
+      "schedule_hours_per_day": 4,
+      "must_haves": [
+        "Spanish-speaking nanny for language exposure",
+        "Experience with toddlers and school-aged children",
+        "Ability to assist with nap time for the 2-year-old",
+        "CPR and First Aid certified"
+      ],
+      "nice_to_haves": [
+        "Experience with meal preparation for kids",
+        "Familiarity with early childhood education activities",
+        "Comfortable with pets (we have a friendly dog)"
+      ],
+      "neighborhood": "Eastside",
+      "notes": "Hello! We are the Martinez family, and we are looking for a reliable and caring nanny to help us on Saturday mornings. Our family consists of two children: our 7-year-old daughter, Sofia, who loves to play games and engage in creative activities, and our 2-year-old son, Mateo, who is still napping during that time. We would like a nanny who speaks Spanish to help expose our children to the language, as it is important to us that they develop bilingual skills from a young age. During the hours we need coverage, we would like the nanny to engage with Sofia in age-appropriate activities while also ensuring that Mateo gets his nap time. If the nanny can help prepare a light brunch for the children, that would be a bonus, but it's not a requirement. We live in the Eastside area and would prefer someone local who can commute easily. Our dog, Luna, is very friendly and would need some attention as well, so being comfortable with pets is a plus. Thank you for considering our family! We look forward to finding the right match."
+    },
+    {
+      "id": "p_05",
+      "family_name": "Johnson",
+      "children": [],
+      "schedule_days": [
+        "mon",
+        "tue",
+        "wed"
+      ],
+      "schedule_hours_per_day": 12,
+      "must_haves": [
+        "Experienced night-nurse or newborn-care specialist",
+        "NICU or postpartum experience strongly preferred",
+        "CPR and First Aid certified",
+        "Ability to provide basic infant care including feeding, diapering, and soothing"
+      ],
+      "nice_to_haves": [
+        "Bilingual (English and Spanish)",
+        "Experience with breastfeeding support",
+        "Familiarity with infant sleep training techniques",
+        "References from previous families"
+      ],
+      "neighborhood": "Eastside",
+      "notes": "We are expecting our first child in three months and are seeking a night-nurse or newborn-care specialist to help us during those crucial early weeks. Since this is our first experience with a newborn, we want someone who can guide us and provide reassurance as we navigate this new chapter. We are looking for assistance three nights a week, ideally from 8 PM to 8 AM, so we can get some rest while knowing our baby is in capable hands. It's important that candidates have NICU or postpartum experience, as this would give us peace of mind in case any unexpected situations arise. We would appreciate someone who is compassionate, patient, and has a calm demeanor. Additionally, if they have experience with breastfeeding support or infant sleep training techniques, that would be a bonus for us as new parents. We live in the Eastside and would prefer a nanny who is local or has reliable transportation. Please include references from previous families in your application. Thank you for your help in finding the right fit for our family!"
+    }
+  ]
+}
