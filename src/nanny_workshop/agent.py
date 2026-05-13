@@ -71,3 +71,31 @@ def react_run(
         history_lines.append(f"Observation: {record.observation}")
 
     return trace
+
+
+import json
+from pathlib import Path
+
+
+class MemoryStore:
+    """JSON-backed long-term memory keyed by parent_id then by arbitrary string keys.
+
+    In-memory state is loaded from disk on construction. Call save() to persist.
+    """
+
+    def __init__(self, path: str | Path):
+        self._path = Path(path)
+        if self._path.exists():
+            self._data = json.loads(self._path.read_text())
+        else:
+            self._data = {}
+
+    def get(self, parent_id: str, key: str, default=None):
+        return self._data.get(parent_id, {}).get(key, default)
+
+    def set(self, parent_id: str, key: str, value):
+        self._data.setdefault(parent_id, {})[key] = value
+
+    def save(self) -> None:
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._path.write_text(json.dumps(self._data, indent=2))

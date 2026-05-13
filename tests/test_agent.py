@@ -86,3 +86,24 @@ def test_react_run_dispatches_to_tool():
     )
     assert calls == [{"query": "CPR"}]
     assert trace.final_answer == "Found Alex."
+
+
+def test_memory_store_persists_across_instances(tmp_path):
+    from nanny_workshop.agent import MemoryStore
+
+    store_path = tmp_path / "memory.json"
+    s1 = MemoryStore(path=store_path)
+    s1.set(parent_id="p_01", key="preferences", value={"dogs": "ok", "language": "Spanish"})
+    s1.save()
+
+    s2 = MemoryStore(path=store_path)
+    pref = s2.get(parent_id="p_01", key="preferences")
+    assert pref == {"dogs": "ok", "language": "Spanish"}
+
+
+def test_memory_store_returns_default_for_missing(tmp_path):
+    from nanny_workshop.agent import MemoryStore
+
+    s = MemoryStore(path=tmp_path / "m.json")
+    assert s.get(parent_id="p_99", key="anything") is None
+    assert s.get(parent_id="p_99", key="anything", default={"x": 1}) == {"x": 1}
