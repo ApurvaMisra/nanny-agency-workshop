@@ -1,0 +1,28 @@
+# Example CI workflow that runs evaluators on every PR.
+# This file is committed as documentation; the workshop repo doesn't actually deploy.
+name: Eval CI
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "baml_src/**"
+      - "tests/**"
+  workflow_dispatch:
+
+jobs:
+  evaluators:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - name: Install
+        run: uv sync --all-extras
+      - name: Regenerate BAML client
+        run: uv run baml-cli generate --from baml_src
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Run evaluators
+        run: uv run pytest tests/test_eval_pipeline.py -v
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
