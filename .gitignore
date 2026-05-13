@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+.env
+.ipynb_checkpoints/
+nanny_db/
+traces/*.jsonl
+!traces/reference_traces.jsonl
+.pytest_cache/
+.ruff_cache/
+baml_client/
+phoenix_data/
+.cache/

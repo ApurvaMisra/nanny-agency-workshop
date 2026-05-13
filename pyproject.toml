@@ -1,0 +1,41 @@
+[project]
+name = "nanny-workshop"
+version = "0.1.0"
+description = "AI Reliability Workshop — Nanny Agency"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.40.0",
+    "pydantic>=2.7.0",
+    "python-dotenv>=1.0.0",
+    "pypdf>=4.2.0",
+    "reportlab>=4.2.0",
+    "chromadb>=0.5.0",
+    "arize-phoenix>=4.0.0",
+    "baml-py>=0.55.0",
+    "umap-learn>=0.5.6",
+    "matplotlib>=3.8.0",
+    "scikit-learn>=1.4.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.29.0",
+    "dspy-ai>=2.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "nbmake>=1.5.0",
+    "ruff>=0.4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nanny_workshop"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v"
