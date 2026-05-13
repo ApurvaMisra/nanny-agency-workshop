@@ -99,3 +99,40 @@ class MemoryStore:
     def save(self) -> None:
         self._path.parent.mkdir(parents=True, exist_ok=True)
         self._path.write_text(json.dumps(self._data, indent=2))
+
+
+def run_team(
+    user_query: str,
+    plan_fn: Callable,
+    research_fn: Callable,
+    executor_fn: Callable,
+    evidence_for_research: Callable[[str], str],
+    max_research_steps: int = 4,
+) -> dict:
+    """Run the Planner → Researcher → Executor pipeline.
+
+    plan_fn(user_query) -> Plan (object with .goal, .steps)
+    research_fn(task, evidence_context) -> ResearchFinding
+    executor_fn(task, findings) -> str
+    evidence_for_research(task) -> str (controller decides where to fetch evidence)
+    """
+    plan = plan_fn(user_query=user_query)
+    findings: list = []
+    reply = ""
+
+    research_count = 0
+    for step in plan.steps:
+        if step.agent == "researcher":
+            if research_count >= max_research_steps:
+                continue
+            evidence = evidence_for_research(step.task)
+            finding = research_fn(task=step.task, evidence_context=evidence)
+            findings.append(finding)
+            research_count += 1
+        elif step.agent == "executor":
+            finding_summaries = "\n".join(
+                f"- [{f.source}] {f.claim}: {f.excerpt}" for f in findings
+            ) or "(no findings yet)"
+            reply = executor_fn(task=step.task, findings=finding_summaries)
+
+    return {"plan": plan, "findings": findings, "reply": reply}

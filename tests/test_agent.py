@@ -107,3 +107,42 @@ def test_memory_store_returns_default_for_missing(tmp_path):
     s = MemoryStore(path=tmp_path / "m.json")
     assert s.get(parent_id="p_99", key="anything") is None
     assert s.get(parent_id="p_99", key="anything", default={"x": 1}) == {"x": 1}
+
+
+def test_run_team_invokes_planner_researcher_executor():
+    """run_team calls plan_fn once, researcher_fn per research step, executor_fn per exec step."""
+    plan_steps = [
+        MagicMock(agent="researcher", task="look up policy"),
+        MagicMock(agent="executor", task="draft reply"),
+    ]
+    plan = MagicMock(goal="answer the parent", steps=plan_steps)
+    plan_calls = []
+    research_calls = []
+    exec_calls = []
+
+    def plan_fn(user_query):
+        plan_calls.append(user_query)
+        return plan
+
+    def research_fn(task, evidence_context):
+        research_calls.append(task)
+        return MagicMock(source="policies", excerpt="cancellation excerpt", claim="...")
+
+    def executor_fn(task, findings):
+        exec_calls.append(task)
+        return "Drafted reply."
+
+    from nanny_workshop.agent import run_team
+
+    result = run_team(
+        user_query="Cancel my booking",
+        plan_fn=plan_fn,
+        research_fn=research_fn,
+        executor_fn=executor_fn,
+        evidence_for_research=lambda task: "evidence",
+    )
+    assert plan_calls == ["Cancel my booking"]
+    assert research_calls == ["look up policy"]
+    assert exec_calls == ["draft reply"]
+    assert "Drafted reply." in result["reply"]
+    assert len(result["findings"]) == 1
