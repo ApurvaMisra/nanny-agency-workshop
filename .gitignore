@@ -14,3 +14,12 @@ baml_client/
 phoenix_data/
 .cache/
 .DS_Store
+
+# Workshop author's planning artifacts — not shipped to attendees
+docs/superpowers/
+
+# Runtime-created memory (Notebook 2 section 4)
+data/memory.json
+
+# Notebook execution artifacts
+notebooks/*_executed.ipynb
