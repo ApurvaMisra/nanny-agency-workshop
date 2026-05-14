@@ -10,6 +10,8 @@ A 6-hour hands-on workshop covering one-turn LLM patterns, agent reliability wit
 
 ## Pre-workshop setup (do this before the workshop)
 
+**👉 Full attendee guide:** see [`SETUP.md`](./SETUP.md) for the complete setup, tech-stack reference, agenda, and troubleshooting.
+
 ### 1. Requirements
 - Python 3.11 or newer
 - `uv` (recommended) or pip
