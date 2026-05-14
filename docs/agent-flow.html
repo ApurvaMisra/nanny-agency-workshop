@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nanny Agency Agent — Flow Diagrams</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --fg: #1a1a1a;
+    --muted: #555;
+    --accent: #2563eb;
+    --card: #ffffff;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+    margin: 0;
+    padding: 2rem 1.5rem 4rem;
+  }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.9rem; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.35rem; margin: 2.5rem 0 0.6rem; }
+  p.lede { color: var(--muted); margin: 0 0 1.5rem; }
+  p, li { color: var(--fg); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .card .mermaid { display: flex; justify-content: center; }
+  .meta {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+  ul { padding-left: 1.3rem; }
+  code {
+    background: #f1f3f5;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.92em;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  .pill {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 0.78rem;
+    margin-right: 0.3rem;
+  }
+  footer { color: var(--muted); margin-top: 3rem; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Nanny Agency Agent — Flow Diagrams</h1>
+<p class="lede">
+  Visual reference for how the booking agent built in <code>notebooks/02_agent.ipynb</code>
+  handles a parent request end-to-end. Every diagram corresponds to a section in the workshop.
+</p>
+
+<h2>1. End-to-end request flow (with guardrails)</h2>
+<p>
+  A parent message passes through input guardrails, intent classification, the ReAct loop
+  (with progressive tool disclosure), and an output guardrail before the reply is sent.
+  Every step is traced to Arize Phoenix.
+</p>
+<div class="card">
+<pre class="mermaid">
+flowchart TD
+    U[Parent message] --> IG[Input guardrail<br/>PII redact &amp; off-topic check]
+    IG -->|on-topic| IC{Intent classifier<br/>ClassifyIntent}
+    IG -->|off-topic / PII| ESC[Escalate to human]
+
+    IC -->|search| TS1[search_nannies + finish]
+    IC -->|policy| TS2[get_policy + finish]
+    IC -->|booking| TS3[search_nannies +<br/>check_availability +<br/>draft_email + finish]
+    IC -->|other| ESC
+
+    TS1 --> RL
+    TS2 --> RL
+    TS3 --> RL
+
+    subgraph RL[ReAct loop &mdash; up to max_steps]
+        direction TB
+        D[BAML DecideWithTools<br/>thought + tool_call] --> A{tool_call.name}
+        A -->|finish| END([final_answer])
+        A -->|tool| T[Dispatch Python tool]
+        T --> O[Observation appended to history]
+        O --> D
+    end
+
+    END --> OG[Output guardrail<br/>medical / emergency check]
+    OG -->|clean| REPLY[Send reply to parent]
+    OG -->|risky| ESC
+
+    classDef bad fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef good fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef neutral fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
+    class IG,OG bad
+    class REPLY good
+    class IC,D,A,T,O,END neutral
+    class ESC bad
+</pre>
+</div>
+<div class="meta">
+  <span class="pill">Section 1, 2, 5, 6, 9</span>
+  Phoenix auto-instruments every BAML call and OpenAI request.
+</div>
+
+<h2>2. ReAct loop &mdash; one iteration</h2>
+<p>
+  Inside the ReAct loop, BAML returns a typed <code>AgentStep</code> per turn. Python dispatches the named tool with the typed args, records the observation, and loops.
+</p>
+<div class="card">
+<pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant L as react_run loop
+    participant B as BAML DecideWithTools
+    participant T as Tool (Python)
+
+    U->>L: user_message
+    loop until finish or max_steps
+        L->>B: history + user_message
+        B-->>L: AgentStep { thought, tool_call, final_answer? }
+        alt tool_call.name == "finish"
+            L-->>U: final_answer
+        else known tool
+            L->>T: tool(**args)
+            T-->>L: observation
+            L->>L: append (Thought, Action, Observation)
+        else unknown tool
+            L->>L: record "&lt;&lt;error: unknown tool&gt;&gt;"
+        end
+    end
+</pre>
+</div>
+<div class="meta"><span class="pill">Section 1</span> <code>react_run</code> lives in <code>src/nanny_workshop/agent.py</code>.</div>
+
+<h2>3. Multi-agent topology (Planner &rarr; Researcher &rarr; Executor)</h2>
+<p>
+  Section 7 of the agent notebook splits the work across three role-bound BAML functions.
+  An optional Critic step can ask the Executor to revise a draft that doesn't cite findings cleanly.
+</p>
+<div class="card">
+<pre class="mermaid">
+flowchart LR
+    U[Parent query] --> P[PlanAgent<br/>produces Plan with steps]
+    P -->|for each<br/>researcher step| R[ResearcherAgent<br/>cites source or returns 'unknown']
+    R -->|finding| FS[findings list]
+    P -->|for each<br/>executor step| E[ExecutorAgent<br/>drafts reply from findings only]
+    FS --> E
+    E --> REPLY[Reply to parent]
+    E -.optional.-> C{CriticAgent}
+    C -->|APPROVED| REPLY
+    C -->|REVISE| E
+
+    classDef role fill:#fff7ed,stroke:#ea580c,color:#7c2d12;
+    class P,R,E,C role
+</pre>
+</div>
+<div class="meta"><span class="pill">Section 7</span> <code>run_team</code> in <code>src/nanny_workshop/agent.py</code>.</div>
+
+<h2>4. Multi-agent failure modes (and their mitigations)</h2>
+<p>
+  Section 8 of the notebook walks through each failure mode with a deliberately broken setup and the recommended fix.
+</p>
+<div class="card">
+<pre class="mermaid">
+flowchart TB
+    subgraph FM[5 failure modes]
+        direction TB
+        F1[Handoff Loss]
+        F2[Telephone Game]
+        F3[Stale Shared Memory]
+        F4[Role Confusion]
+        F5[Parallel Disagreement]
+    end
+
+    subgraph MT[Mitigations]
+        direction TB
+        M1[Required handoff envelope<br/>+ refuse if missing]
+        M2[Pass-by-reference<br/>+ require citation]
+        M3[Version stamps on writes<br/>readers verify latest]
+        M4[Typed role-bound functions<br/>researcher cites or 'unknown']
+        M5[Arbiter agent or<br/>majority vote]
+    end
+
+    F1 --> M1
+    F2 --> M2
+    F3 --> M3
+    F4 --> M4
+    F5 --> M5
+
+    classDef bad fill:#fee2e2,stroke:#dc2626,color:#7f1d1d;
+    classDef good fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    class F1,F2,F3,F4,F5 bad
+    class M1,M2,M3,M4,M5 good
+</pre>
+</div>
+<div class="meta"><span class="pill">Section 8</span> Each shown with a runnable broken+fixed pair.</div>
+
+<h2>5. Memory and permissions side-flows</h2>
+<p>
+  Short-term memory is an in-session dict; long-term memory is a JSON store keyed by <code>parent_id</code>.
+  Permissions are enforced by wrapping tools so forbidden actions return a refusal observation.
+</p>
+<div class="card">
+<pre class="mermaid">
+flowchart LR
+    subgraph Memory
+        direction TB
+        SH[Short-term:<br/>session dict] -.persist on confirm.-> LT[(MemoryStore<br/>data/memory.json)]
+        LT -.load on new session.-> SH
+    end
+
+    subgraph Permissions
+        direction TB
+        Agent[Agent decides tool_call] --> GT[gated_tool wrapper]
+        GT -->|allowed| Tool[Real tool runs]
+        GT -->|forbidden pre-confirm| Refusal[POLICY REFUSAL observation]
+        Tool --> HITL{Booking-creating?}
+        HITL -->|yes| Confirm[Wait for parent YES]
+        HITL -->|no| Done[Continue]
+        Confirm --> Done
+    end
+
+    classDef state fill:#f5f3ff,stroke:#7c3aed,color:#4c1d95;
+    classDef guard fill:#fef3c7,stroke:#d97706,color:#78350f;
+    class SH,LT state
+    class GT,HITL,Confirm,Refusal guard
+</pre>
+</div>
+<div class="meta"><span class="pill">Section 4, 5</span> Memory survives crashes; permissions are first-class.</div>
+
+<h2>6. Reliability stack (cumulative view)</h2>
+<p>
+  Each notebook section adds one layer. The diagram below shows where each lives in the pipeline.
+</p>
+<div class="card">
+<pre class="mermaid">
+flowchart TD
+    classDef layer fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
+
+    A[Section 1 &mdash; ReAct loop]:::layer --> B[Section 2 &mdash; Progressive disclosure]:::layer
+    B --> C[Section 3 &mdash; Context management<br/>rolling summary + window]:::layer
+    C --> D[Section 4 &mdash; Memory]:::layer
+    D --> E[Section 5 &mdash; Permissions]:::layer
+    E --> F[Section 6 &mdash; Determinism + fallbacks]:::layer
+    F --> G[Section 7 &mdash; Multi-agent topology]:::layer
+    G --> H[Section 8 &mdash; Multi-agent failure mitigations]:::layer
+    H --> I[Section 9 &mdash; Input &amp; output guardrails]:::layer
+    I --> J((Production-ready agent))
+</pre>
+</div>
+<div class="meta">Each layer was introduced as a fix for a demonstrated failure.</div>
+
+<footer>
+  Generated for the Nanny Agency AI Reliability Workshop &middot;
+  Diagrams render with <a href="https://mermaid.js.org/">Mermaid</a> v11 from CDN.
+</footer>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "default",
+    flowchart: { curve: "basis", htmlLabels: true },
+    securityLevel: "loose",
+  });
+</script>
+</body>
+</html>
