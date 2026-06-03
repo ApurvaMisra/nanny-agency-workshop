@@ -67,7 +67,7 @@ def decide_activity(user_message: str, history: str) -> Decision:
     _log_activity("decide_activity")
     from baml_client.sync_client import b
 
-    step = b.DecideOneTool(user_message=user_message, history=history)
+    step = b.DecideAllTools(user_message=user_message, history=history)
     return Decision(
         thought=step.thought,
         tool_name=step.tool_call.name,
