@@ -7,6 +7,7 @@ A 6-hour hands-on workshop covering one-turn LLM patterns, agent reliability wit
 1. **Notebook 1** — One-turn LLM patterns: email generation, personalization, PDF extraction, embeddings + matching (ChromaDB).
 2. **Notebook 2** — Booking agent in BAML: ReAct loop, multi-tool, progressive disclosure, context management, memory, permissions, fallbacks, determinism, multi-agent with the 5 failure modes, guardrails. Traced with Arize Phoenix.
 3. **Notebook 3** — Evaluation: vendor-metric critique, error analysis (open + axial coding), transition failure matrix, synthetic data generation, golden dataset, programmatic + LLM-as-judge (DSPy-optimized), CI integration, online monitoring.
+4. **Notebook 4** — Durable agent with Temporal: the booking agent as a durable workflow with a human-approval gate (signal + query), exactly-once side effects, and survival across worker restarts.
 
 ## Pre-workshop setup (do this before the workshop)
 
@@ -16,6 +17,7 @@ A 6-hour hands-on workshop covering one-turn LLM patterns, agent reliability wit
 - Python 3.11 or newer
 - `uv` (recommended) or pip
 - An OpenAI API key with a small usage budget (estimated < $5 per attendee, mostly under $1)
+- For Notebook 4 only: the [`temporal` CLI](https://docs.temporal.io/cli#install) (`brew install temporal`), with `temporal server start-dev` running.
 
 ### 2. Install
 
