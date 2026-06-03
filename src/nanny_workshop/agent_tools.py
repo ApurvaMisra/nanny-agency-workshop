@@ -75,12 +75,29 @@ def get_policy(topic: str) -> str:
     return ""
 
 
+_DAY_CODES = {
+    "monday": "mon", "tuesday": "tue", "tues": "tue", "wednesday": "wed",
+    "thursday": "thu", "thur": "thu", "thurs": "thu", "friday": "fri",
+    "saturday": "sat", "sunday": "sun",
+}
+
+
+def _day_code(day: str) -> str:
+    """Normalize a day name to its 3-letter code (e.g. 'Thursday' -> 'thu')."""
+    d = day.strip().lower()
+    return _DAY_CODES.get(d, d[:3])
+
+
 def check_availability(nanny_id: str, day: str) -> bool:
-    """Return True if the nanny is available on the given 3-letter day code."""
+    """Return True if the nanny is available on the given day.
+
+    Accepts full names ('Thursday'), 3-letter codes ('thu'), and common
+    abbreviations, case-insensitively.
+    """
     nanny = next((n for n in _seed()["nannies"] if n["id"] == nanny_id), None)
     if nanny is None:
         return False
-    return day.lower() in [d.lower() for d in nanny["availability_days"]]
+    return _day_code(day) in {_day_code(d) for d in nanny["availability_days"]}
 
 
 def draft_email(parent_id: str, nanny_id: str, day: str, hours: str, notes: str = "") -> str:

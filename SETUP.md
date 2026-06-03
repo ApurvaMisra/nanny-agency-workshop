@@ -209,6 +209,16 @@ xdg-open docs/agent-flow.html     # Linux
 ### "I want to start fresh"
 - Delete `nanny_db/`, `.cache/`, `data/memory.json`, and `baml_client/`. They'll be rebuilt on the next run. Your `.env` and `data/seed_db.json` stay.
 
+### Notebook 4 — Temporal
+
+Notebook 4 needs the `temporal` CLI in addition to your OpenAI key:
+
+1. Install: `brew install temporal` (macOS) or see https://docs.temporal.io/cli#install
+2. In a separate terminal: `temporal server start-dev` (Web UI: http://localhost:8233)
+3. Run the notebook; it starts the worker subprocess for you.
+
+If you see "No Temporal server on localhost:7233", start the dev server (step 2).
+
 ---
 
 ## 9. What to bring on the day
