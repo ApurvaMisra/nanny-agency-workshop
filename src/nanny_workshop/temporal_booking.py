@@ -103,3 +103,86 @@ def send_email_activity(drafted_email: str) -> str:
     # In production this would call an email provider. Here we just confirm.
     preview = drafted_email.strip().splitlines()[0] if drafted_email.strip() else "(empty)"
     return f"SENT: {preview}"
+
+
+@workflow.defn
+class BookingWorkflow:
+    """Durable ReAct booking loop with a human-approval gate.
+
+    Mirrors Notebook 2's react_run, but the orchestration is durable and the
+    'send email' side effect is gated behind a human ``approve`` signal.
+    """
+
+    def __init__(self) -> None:
+        self._status: str = "drafting"
+        self._decision: Optional[Approval] = None
+
+    @workflow.run
+    async def run(self, user_message: str, max_steps: int = 6) -> BookingResult:
+        result = BookingResult(user_message=user_message)
+        history_lines: list[str] = []
+        draft: Optional[str] = None
+        timeout = timedelta(seconds=60)
+
+        for _ in range(max_steps):
+            history = "\n".join(history_lines)
+            decision = await workflow.execute_activity(
+                decide_activity, args=[user_message, history], start_to_close_timeout=timeout
+            )
+            if decision.tool_name == "finish":
+                result.steps.append(
+                    {"thought": decision.thought, "tool_name": "finish", "tool_args": {}, "observation": None}
+                )
+                break
+
+            observation = await workflow.execute_activity(
+                run_tool_activity,
+                args=[decision.tool_name, decision.tool_args],
+                start_to_close_timeout=timeout,
+            )
+            result.steps.append(
+                {
+                    "thought": decision.thought,
+                    "tool_name": decision.tool_name,
+                    "tool_args": decision.tool_args,
+                    "observation": observation,
+                }
+            )
+            history_lines.append(f"Thought: {decision.thought}")
+            history_lines.append(f"Action: {decision.tool_name}({decision.tool_args})")
+            history_lines.append(f"Observation: {observation}")
+
+            if decision.tool_name == "draft_email":
+                draft = observation
+                break
+
+        if draft is None:
+            result.outcome = "done_no_draft"
+            self._status = "done_no_draft"
+            return result
+
+        result.drafted_email = draft
+
+        # Durably pause until a human sends the approve signal — seconds or days.
+        self._status = "awaiting_approval"
+        await workflow.wait_condition(lambda: self._decision is not None)
+
+        result.approval_note = self._decision.note
+        if self._decision.approved:
+            await workflow.execute_activity(
+                send_email_activity, args=[draft], start_to_close_timeout=timeout
+            )
+            result.outcome = "sent"
+            self._status = "sent"
+        else:
+            result.outcome = "rejected"
+            self._status = "rejected"
+        return result
+
+    @workflow.signal
+    def approve(self, approved: bool, note: str = "") -> None:
+        self._decision = Approval(approved=approved, note=note)
+
+    @workflow.query
+    def status(self) -> str:
+        return self._status
