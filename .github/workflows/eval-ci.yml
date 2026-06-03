@@ -23,6 +23,6 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       - name: Run evaluators
-        run: uv run pytest tests/test_eval_pipeline.py -v
+        run: uv run pytest tests/test_eval.py -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
