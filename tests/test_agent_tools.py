@@ -47,6 +47,23 @@ def test_check_availability_unknown_nanny_returns_false():
     assert check_availability(nanny_id="n_does_not_exist", day="mon") is False
 
 
+def test_check_availability_accepts_full_day_names_case_insensitively(seed):
+    # Agents naturally pass "Saturday", not the stored 3-letter "sat" code.
+    nanny = next(n for n in seed["nannies"] if n["availability_days"])
+    code_to_name = {
+        "mon": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thu": "Thursday",
+        "fri": "Friday", "sat": "Saturday", "sun": "Sunday",
+    }
+    avail_code = nanny["availability_days"][0]
+    full_name = code_to_name[avail_code]
+    assert check_availability(nanny_id=nanny["id"], day=full_name) is True
+    assert check_availability(nanny_id=nanny["id"], day=full_name.upper()) is True
+    all_codes = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
+    unavail = list(all_codes - set(nanny["availability_days"]))
+    if unavail:
+        assert check_availability(nanny_id=nanny["id"], day=code_to_name[unavail[0]]) is False
+
+
 def test_draft_email_includes_names(seed):
     parent = seed["parents"][0]
     nanny = seed["nannies"][0]

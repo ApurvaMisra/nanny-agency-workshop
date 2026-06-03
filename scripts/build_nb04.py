@@ -58,7 +58,7 @@ The durable agent lives in `nanny_workshop/temporal_booking.py`. The ReAct loop 
 
 ```
 BookingWorkflow.run(user_message):
-    loop:  decide_activity            # b.DecideOneTool (LLM)
+    loop:  decide_activity            # b.DecideAllTools (LLM)
            run_tool_activity(...)     # search / check_availability / draft_email
            break when a draft is ready
     await wait_condition(approved?)   # <-- durable human-approval gate
@@ -88,8 +88,10 @@ def start_worker():
     for line in p.stdout:                 # block until ready
         print("worker:", line.strip())
         if "WORKER READY" in line:
-            break
-    return p
+            return p
+    # stdout closed without the marker -> the worker died during startup.
+    p.wait()
+    raise RuntimeError("worker exited before becoming ready (see output above)")
 
 worker = start_worker()
 client = await Client.connect("localhost:7233")
@@ -102,7 +104,7 @@ log_path.write_text("")
 
 handle = await client.start_workflow(
     BookingWorkflow.run,
-    "I want to book Maria (n_01) for Thursday, 6 hours. I'm family p_01.",
+    "I want to book Maria (n_01) for Saturday, 6 hours. I'm family p_01.",
     id=f"booking-{uuid.uuid4()}",
     task_queue=TASK_QUEUE,
 )
@@ -140,7 +142,7 @@ A second booking, rejected — no email is sent.""")
 
 code('''h2 = await client.start_workflow(
     BookingWorkflow.run,
-    "Book Maria (n_01) for Thursday, 6 hours, family p_01.",
+    "Book Maria (n_01) for Saturday, 6 hours, family p_01.",
     id=f"booking-{uuid.uuid4()}",
     task_queue=TASK_QUEUE,
 )
@@ -158,7 +160,7 @@ Temporal — so it still completes.""")
 
 code('''h3 = await client.start_workflow(
     BookingWorkflow.run,
-    "Book Maria (n_01) for Thursday, 6 hours, family p_01.",
+    "Book Maria (n_01) for Saturday, 6 hours, family p_01.",
     id=f"booking-{uuid.uuid4()}",
     task_queue=TASK_QUEUE,
 )
