@@ -25,11 +25,11 @@ Please complete this setup **before the workshop begins**. The setup takes ~15 m
 | Requirement | Why | Notes |
 |---|---|---|
 | **Python 3.11 or newer** | Several deps (`baml-py`, modern type syntax) require it | `python3 --version` |
-| **`uv`** (recommended) or `pip` | Dependency / venv manager — much faster than pip | Install: `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| **`uv`** (recommended) or `pip` | Dependency / venv manager — much faster than pip | macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh \| sh` · Windows (PowerShell): `irm https://astral.sh/uv/install.ps1 \| iex` |
 | **Git** | To clone the repo | `git --version` |
 | **An OpenAI API key with usage budget** | All LLM calls go through OpenAI | Estimated cost: **< $5 total for the full workshop**, usually under $1 thanks to on-disk caching. |
 | **A modern browser** | Jupyter UI + Phoenix observability + the Mermaid diagrams in `docs/agent-flow.html` | Chrome, Firefox, Safari, or Edge |
-| **macOS, Linux, or WSL2 on Windows** | Tested on macOS 14+ and Linux. Native Windows is not supported. | Apple Silicon and Intel both work |
+| **macOS, Linux, or Windows 10/11** | Commands below are given for **macOS/Linux** *and* **Windows (PowerShell)**. WSL2 works too — use the macOS/Linux commands. | Apple Silicon and Intel both work. Primarily validated on macOS/Linux; Windows uses the documented equivalents shown throughout. |
 | **~2 GB free disk** | Python deps + Chroma DB + cached LLM responses | |
 
 You do **not** need a GPU. Everything runs against the OpenAI API.
@@ -53,13 +53,24 @@ cd nanny-agency-workshop
 uv sync --all-extras
 ```
 
+`git clone`, `cd`, and `uv sync --all-extras` are identical on every platform.
+
 If you don't have `uv`:
 
+**macOS / Linux / WSL2:**
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate    # Windows-WSL: source .venv/bin/activate
+source .venv/bin/activate
 pip install -e ".[dev]"
 ```
+
+**Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
+> If PowerShell blocks the activate script, run once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 `uv sync` is preferred — it uses `uv.lock` for **byte-for-byte reproducible** installs.
 
@@ -68,7 +79,10 @@ pip install -e ".[dev]"
 ## 3. Configure your OpenAI API key
 
 ```bash
-cp .env.example .env
+cp .env.example .env           # macOS / Linux / WSL2
+```
+```powershell
+copy .env.example .env         # Windows (PowerShell or cmd)
 ```
 
 Open `.env` in any editor and replace the placeholder:
@@ -175,6 +189,8 @@ See **`docs/agent-flow.html`** in your browser for a visual overview of the agen
 ```bash
 open docs/agent-flow.html         # macOS
 xdg-open docs/agent-flow.html     # Linux
+start docs/agent-flow.html        # Windows (PowerShell / cmd)
+explorer.exe docs/agent-flow.html # WSL2 (opens in your Windows browser)
 ```
 
 ---
@@ -191,7 +207,10 @@ xdg-open docs/agent-flow.html     # Linux
 
 ### Phoenix port already in use
 - The smoke notebook prints a `⚠️` and the workshop falls back to a JSON trace logger. You can still complete every section.
-- To clear a stuck port: `lsof -ti :6006 | xargs kill -9` (then rerun the cell).
+- To clear a stuck port:
+  - macOS / Linux / WSL2: `lsof -ti :6006 | xargs kill -9`
+  - Windows (PowerShell): `Get-NetTCPConnection -LocalPort 6006 | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }` (or find the PID with `netstat -ano | findstr :6006`, then `taskkill /F /PID <pid>`)
+  - Then rerun the cell.
 
 ### OpenAI 429 (rate limit)
 - The workshop uses `gpt-4o-mini` (very low quota).
@@ -213,11 +232,18 @@ xdg-open docs/agent-flow.html     # Linux
 
 Notebook 4 needs the `temporal` CLI in addition to your OpenAI key:
 
-1. Install: `brew install temporal` (macOS) or see https://docs.temporal.io/cli#install
-2. In a separate terminal: `temporal server start-dev` (Web UI: http://localhost:8233)
+1. Install the CLI:
+   - **macOS:** `brew install temporal`
+   - **Linux / WSL2:** `curl -sSf https://temporal.download/cli.sh | sh` (then add `$HOME/.temporalio/bin` to your `PATH`)
+   - **Windows:** follow the Windows instructions at https://docs.temporal.io/cli#install — download the `temporal` executable and add its folder to your `PATH`
+2. In a **separate terminal**, start the dev server (same command on every platform):
+   ```
+   temporal server start-dev
+   ```
+   Web UI: http://localhost:8233 · gRPC: localhost:7233
 3. Run the notebook; it starts the worker subprocess for you.
 
-If you see "No Temporal server on localhost:7233", start the dev server (step 2).
+If you see "No Temporal server on localhost:7233", start the dev server (step 2). On Windows, run `temporal server start-dev` in a normal PowerShell/cmd window (not inside WSL) if you launched Jupyter from Windows — both must be on the same side.
 
 ---
 
