@@ -25,8 +25,11 @@ A 6-hour hands-on workshop covering one-turn LLM patterns, agent reliability wit
 git clone <repo-url> nanny-agency-workshop
 cd nanny-agency-workshop
 uv sync --all-extras
-# or: python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
+# pip (macOS/Linux/WSL2): python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
+# pip (Windows PowerShell): python -m venv .venv; .venv\Scripts\Activate.ps1; pip install -e ".[dev]"
 ```
+
+Works on macOS, Linux, Windows 10/11 (PowerShell), and WSL2. See [`SETUP.md`](./SETUP.md) for per-platform commands.
 
 ### 3. Configure your API key
 
