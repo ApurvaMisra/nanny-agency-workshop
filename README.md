@@ -58,7 +58,7 @@ Run every cell. Each cell should print `✅ OK`. If Phoenix prints `⚠️`, the
 
 - **`baml-cli generate` fails** — make sure you ran `uv sync --all-extras`; `baml-py` brings the CLI. On Apple Silicon, ensure you're on Python 3.11+ (older Pythons fail to install `baml-py`).
 - **Phoenix port already in use** — the smoke test will log a warning; the workshop ships a JSON trace logger fallback.
-- **OpenAI 429 (rate limit)** — the workshop uses `gpt-4o-mini` (very low quota). If you hit limits, the on-disk cache means re-runs are free. Wait 60s and re-run the failing cell.
+- **OpenAI 429 (rate limit)** — the workshop uses `gpt-6-luna` (very low quota). If you hit limits, the on-disk cache means re-runs are free. Wait 60s and re-run the failing cell.
 - **PDF extraction returns empty text** — some PDFs have no embedded text. The workshop's PDFs are all text-based; if you see this, the file may have been corrupted on download — `git checkout data/pdfs/` to restore.
 - **`baml_client` import error** — run `uv run baml-cli generate --from baml_src` (step 4 above). The generated client is gitignored.
 

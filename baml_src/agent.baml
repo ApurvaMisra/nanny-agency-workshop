@@ -15,7 +15,7 @@ class AgentStep {
 
 // Single-tool ReAct primer (Section 1). Agent uses ONLY search_nannies + finish.
 function DecideOneTool(user_message: string, history: string) -> AgentStep {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are a nanny-agency booking assistant. You may only call: search_nannies, finish.
 
@@ -38,7 +38,7 @@ function DecideOneTool(user_message: string, history: string) -> AgentStep {
 
 // Multi-tool agent with all 4 tools exposed (Section 2 demo).
 function DecideAllTools(user_message: string, history: string) -> AgentStep {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are a nanny-agency booking assistant. You can call any of these tools:
 
@@ -49,6 +49,7 @@ function DecideAllTools(user_message: string, history: string) -> AgentStep {
     - draft_email(parent_id: string, nanny_id: string, day: string, hours: string) — produces email text
     - finish — when ready to reply to the user
 
+    Days are weekday names (e.g., "Saturday"); no calendar date is needed.
     Choose one tool per step. If you have enough information, call finish with final_answer.
 
     USER MESSAGE:
@@ -63,7 +64,7 @@ function DecideAllTools(user_message: string, history: string) -> AgentStep {
 
 // Tool-scoped agent (Section 2 fix). The CALLER decides which tools to expose.
 function DecideWithTools(user_message: string, history: string, tools_doc: string) -> AgentStep {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are a nanny-agency booking assistant. You can call only these tools:
 
@@ -83,7 +84,7 @@ function DecideWithTools(user_message: string, history: string, tools_doc: strin
 
 // Intent classifier (Section 2 fix). Decides which tool family is relevant.
 function ClassifyIntent(user_message: string) -> string {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     Classify this user message into exactly ONE category:
     - search (they're looking for nannies)

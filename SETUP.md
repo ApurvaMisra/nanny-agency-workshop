@@ -89,7 +89,7 @@ Open `.env` in any editor and replace the placeholder:
 
 ```env
 OPENAI_API_KEY=sk-your-real-key-here
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-6-luna
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
@@ -213,7 +213,7 @@ explorer.exe docs/agent-flow.html # WSL2 (opens in your Windows browser)
   - Then rerun the cell.
 
 ### OpenAI 429 (rate limit)
-- The workshop uses `gpt-4o-mini` (very low quota).
+- The workshop uses `gpt-6-luna` (very low quota).
 - Every LLM call is cached to disk under `.cache/`, so re-runs are free. Wait 60s and re-run only the failing cell.
 
 ### `baml_client` import error

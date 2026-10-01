@@ -41,7 +41,7 @@ def test_baml_call_emits_openinference_llm_span(in_memory_spans):
     attrs = dict(span.attributes)
     assert attrs.get("openinference.span.kind") == "LLM"
     assert attrs.get("llm.provider") == "openai"
-    assert "gpt-4o-mini" in str(attrs.get("llm.model_name", ""))
+    assert "gpt-6-luna" in str(attrs.get("llm.model_name", ""))
     assert attrs.get("llm.token_count.prompt", 0) > 0
     assert attrs.get("llm.token_count.completion", 0) > 0
     assert "trace-test" in str(attrs.get("output.value", ""))

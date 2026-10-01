@@ -27,14 +27,14 @@ OUT = ROOT / "data" / "seed_db.json"
 def extract_nanny(client: CachedOpenAI, pdf_path: Path, idx: int) -> dict:
     text = extract_text(pdf_path)
     raw = client.complete(
-        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+        model=os.getenv("OPENAI_MODEL", "gpt-6-luna"),
         messages=[
             {
                 "role": "user",
                 "content": NANNY_RESUME_EXTRACTION_PROMPT.replace("{resume_text}", text),
             }
         ],
-        temperature=0.0,
+        reasoning_effort="low",
         response_format={"type": "json_object"},
     )
     data = json.loads(raw)
@@ -45,14 +45,14 @@ def extract_nanny(client: CachedOpenAI, pdf_path: Path, idx: int) -> dict:
 def extract_parent(client: CachedOpenAI, pdf_path: Path, idx: int) -> dict:
     text = extract_text(pdf_path)
     raw = client.complete(
-        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+        model=os.getenv("OPENAI_MODEL", "gpt-6-luna"),
         messages=[
             {
                 "role": "user",
                 "content": PARENT_INTAKE_EXTRACTION_PROMPT.replace("{intake_text}", text),
             }
         ],
-        temperature=0.0,
+        reasoning_effort="low",
         response_format={"type": "json_object"},
     )
     data = json.loads(raw)

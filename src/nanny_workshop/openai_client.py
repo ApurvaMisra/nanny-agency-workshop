@@ -26,7 +26,8 @@ class CachedOpenAI:
         self,
         model: str,
         messages: list[dict],
-        temperature: float = 0.0,
+        temperature: float | None = None,
+        reasoning_effort: str | None = "low",
         response_format: dict | None = None,
         use_cache: bool = True,
     ) -> str:
@@ -34,13 +35,19 @@ class CachedOpenAI:
             "model": model,
             "messages": messages,
             "temperature": temperature,
+            "reasoning_effort": reasoning_effort,
             "response_format": response_format,
         }
         cache_file = self._cache_path("chat", payload)
         if use_cache and cache_file.exists():
             return json.loads(cache_file.read_text())["content"]
 
-        kwargs = {"model": model, "messages": messages, "temperature": temperature}
+        # Reasoning models reject temperature/top_p unless reasoning_effort="none", so both are optional.
+        kwargs = {"model": model, "messages": messages}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        if reasoning_effort is not None:
+            kwargs["reasoning_effort"] = reasoning_effort
         if response_format is not None:
             kwargs["response_format"] = response_format
         resp = self._client.chat.completions.create(**kwargs)

@@ -108,7 +108,7 @@ def draft_email(parent_id: str, nanny_id: str, day: str, hours: str, notes: str 
     nanny = nannies.get(nanny_id, {"name": nanny_id})
 
     return _client().complete(
-        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+        model=os.getenv("OPENAI_MODEL", "gpt-6-luna"),
         messages=[
             {
                 "role": "system",
@@ -131,5 +131,5 @@ def draft_email(parent_id: str, nanny_id: str, day: str, hours: str, notes: str 
                 ),
             },
         ],
-        temperature=0.0,
+        reasoning_effort="low",
     )
