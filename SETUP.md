@@ -28,6 +28,7 @@ Please complete this setup **before the workshop begins**. The setup takes ~15 m
 | **`uv`** (recommended) or `pip` | Dependency / venv manager — much faster than pip | macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh \| sh` · Windows (PowerShell): `irm https://astral.sh/uv/install.ps1 \| iex` |
 | **Git** | To clone the repo | `git --version` |
 | **An OpenAI API key with usage budget** | All LLM calls go through OpenAI | Estimated cost: **< $5 total for the full workshop**, usually under $1 thanks to on-disk caching. |
+| **(Optional) A TypeSafe API key** | Only for the Jev "System One judge" section of Notebook 3 — that section is skipped without it | Create one at https://console.typesafe.ai/keys. Jev is priced per input token ($0.042 per million, output free), so the section costs a tiny fraction of a cent. |
 | **A modern browser** | Jupyter UI + Phoenix observability + the Mermaid diagrams in `docs/agent-flow.html` | Chrome, Firefox, Safari, or Edge |
 | **macOS, Linux, or Windows 10/11** | Commands below are given for **macOS/Linux** *and* **Windows (PowerShell)**. WSL2 works too — use the macOS/Linux commands. | Apple Silicon and Intel both work. Primarily validated on macOS/Linux; Windows uses the documented equivalents shown throughout. |
 | **~2 GB free disk** | Python deps + Chroma DB + cached LLM responses | |
@@ -91,6 +92,8 @@ Open `.env` in any editor and replace the placeholder:
 OPENAI_API_KEY=sk-your-real-key-here
 OPENAI_MODEL=gpt-6-luna
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+# Optional — enables the Jev (System One judge) section of Notebook 3; skipped if empty. https://console.typesafe.ai/keys
+TYPESAFE_API_KEY=
 ```
 
 > **⚠️ Security:** `.env` is gitignored — it will never be committed. Do not paste your key into any chat, screenshot, or notebook cell.
@@ -123,7 +126,7 @@ If every cell printed ✅ (or Phoenix ⚠️), **you're ready for the workshop**
 
 ## 6. Tech stack — what each library does
 
-The whole stack is **Python + open-source + OpenAI**. No proprietary SaaS dependencies beyond the OpenAI API itself.
+The whole stack is **Python + open-source + OpenAI**. No proprietary SaaS dependencies beyond the OpenAI API itself (plus TypeSafe's Jev API for one optional section of Notebook 3).
 
 ### Core LLM stack
 
@@ -133,6 +136,7 @@ The whole stack is **Python + open-source + OpenAI**. No proprietary SaaS depend
 | **`baml-py`** + BAML CLI | Schema-first prompt language for the agent in Notebook 2. Compiles `.baml` files into typed Python functions (`b.DecideOneTool(...)`, `b.PlanAgent(...)`, etc.). Gives you deterministic structured outputs without writing regex parsers. |
 | **`pydantic`** | Validates every structured LLM output (extraction schemas, agent decisions). When the model invents a field, Pydantic catches it. |
 | **`dspy-ai`** | Used in Notebook 3 to **optimize an LLM-as-judge prompt** via `BootstrapFewShot` against human-labeled examples. |
+| **`typesafe-sdk`** | Calls **Jev**, TypeSafe AI's "System One" model, in an optional section of Notebook 3: typed questions in, calibrated probabilities out — a fast, cheap, repeatable judge for narrow verdicts, with low-confidence cases escalated to the LLM judge. |
 
 ### Retrieval & embeddings
 
@@ -181,7 +185,7 @@ The whole stack is **Python + open-source + OpenAI**. No proprietary SaaS depend
 |---|---|---|
 | ~75 min | **`01_one_turn.ipynb`** | One-turn LLM patterns: prompted email generation, personalization, PDF → typed records, vector matching with ChromaDB + interactive UMAP scatter. |
 | ~150 min | **`02_agent.ipynb`** | A parent-facing booking agent in BAML. Each section adds one reliability feature in response to a demonstrated failure: ReAct, progressive disclosure, context management, memory, permissions, determinism + fallbacks, multi-agent topology, the 5 multi-agent failure modes, guardrails. |
-| ~100 min | **`03_evaluation.ipynb`** | Domain-aware evaluation: vendor-metric critique → open + axial coding → synthetic data + golden dataset → programmatic + DSPy-optimized LLM-judge → CI pipeline → online monitoring + drift. |
+| ~100 min | **`03_evaluation.ipynb`** | Domain-aware evaluation: vendor-metric critique → open + axial coding → synthetic data + golden dataset → programmatic + DSPy-optimized LLM-judge + System One judge (Jev) → CI pipeline → online monitoring + drift. |
 | ~30 min | breaks + Q&A | |
 
 See **`docs/agent-flow.html`** in your browser for a visual overview of the agent — open it locally:
