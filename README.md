@@ -6,7 +6,7 @@ A 6-hour hands-on workshop covering one-turn LLM patterns, agent reliability wit
 
 1. **Notebook 1** — One-turn LLM patterns: email generation, personalization, PDF extraction, embeddings + matching (ChromaDB).
 2. **Notebook 2** — Booking agent in BAML: ReAct loop, multi-tool, progressive disclosure, context management, memory, permissions, fallbacks, determinism, multi-agent with the 5 failure modes, guardrails. Traced with Arize Phoenix.
-3. **Notebook 3** — Evaluation: vendor-metric critique, error analysis (open + axial coding), transition failure matrix, synthetic data generation, golden dataset, programmatic + LLM-as-judge (DSPy-optimized), CI integration, online monitoring.
+3. **Notebook 3** — Evaluation: vendor-metric critique, error analysis (open + axial coding), transition failure matrix, synthetic data generation, golden dataset, programmatic + LLM-as-judge (DSPy-optimized), a System One judge (Jev) with confidence-based escalation, CI integration, online monitoring.
 4. **Notebook 4** — Durable agent with Temporal: the booking agent as a durable workflow with a human-approval gate (signal + query), exactly-once side effects, and survival across worker restarts.
 
 ## Pre-workshop setup (do this before the workshop)
@@ -17,6 +17,7 @@ A 6-hour hands-on workshop covering one-turn LLM patterns, agent reliability wit
 - Python 3.11 or newer
 - `uv` (recommended) or pip
 - An OpenAI API key with a small usage budget (estimated < $5 per attendee, mostly under $1)
+- Optional, for one section of Notebook 3: a [TypeSafe API key](https://console.typesafe.ai/keys) for the Jev judge (the section is skipped without it)
 - For Notebook 4 only: the [`temporal` CLI](https://docs.temporal.io/cli#install) (`brew install temporal`), with `temporal server start-dev` running.
 
 ### 2. Install
@@ -36,6 +37,7 @@ Works on macOS, Linux, Windows 10/11 (PowerShell), and WSL2. See [`SETUP.md`](./
 ```bash
 cp .env.example .env
 # Open .env in any editor and replace sk-replace-with-your-key
+# Optional: set TYPESAFE_API_KEY to run Notebook 3's Jev section
 ```
 
 ### 4. Generate the BAML client (one-time)
@@ -58,7 +60,7 @@ Run every cell. Each cell should print `✅ OK`. If Phoenix prints `⚠️`, the
 
 - **`baml-cli generate` fails** — make sure you ran `uv sync --all-extras`; `baml-py` brings the CLI. On Apple Silicon, ensure you're on Python 3.11+ (older Pythons fail to install `baml-py`).
 - **Phoenix port already in use** — the smoke test will log a warning; the workshop ships a JSON trace logger fallback.
-- **OpenAI 429 (rate limit)** — the workshop uses `gpt-4o-mini` (very low quota). If you hit limits, the on-disk cache means re-runs are free. Wait 60s and re-run the failing cell.
+- **OpenAI 429 (rate limit)** — the workshop uses `gpt-6-luna` (very low quota). If you hit limits, the on-disk cache means re-runs are free. Wait 60s and re-run the failing cell.
 - **PDF extraction returns empty text** — some PDFs have no embedded text. The workshop's PDFs are all text-based; if you see this, the file may have been corrupted on download — `git checkout data/pdfs/` to restore.
 - **`baml_client` import error** — run `uv run baml-cli generate --from baml_src` (step 4 above). The generated client is gitignored.
 

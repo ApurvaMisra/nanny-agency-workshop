@@ -61,9 +61,9 @@ def draft_text(client: CachedOpenAI, kind: str, persona: str, idx: int) -> str:
             f"Keep under 350 words."
         )
     return client.complete(
-        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+        model=os.getenv("OPENAI_MODEL", "gpt-6-luna"),
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
+        reasoning_effort="low",
     )
 
 

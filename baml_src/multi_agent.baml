@@ -11,7 +11,7 @@ class Plan {
 }
 
 function PlanAgent(user_query: string) -> Plan {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are the PLANNER for a nanny-agency booking assistant. Given a parent's request,
     produce a plan with concrete next steps for the team.
@@ -35,7 +35,7 @@ class ResearchFinding {
 }
 
 function ResearcherAgent(task: string, evidence_context: string) -> ResearchFinding {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are the RESEARCHER. Your role is to CITE sources, not invent facts.
     Read the evidence and produce a finding that cites where it came from.
@@ -55,7 +55,7 @@ function ResearcherAgent(task: string, evidence_context: string) -> ResearchFind
 }
 
 function ExecutorAgent(task: string, findings: string) -> string {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are the EXECUTOR. You draft user-facing replies based on what the researcher found.
     Stay within scope of the task. Do NOT re-research; trust the findings provided.
@@ -70,7 +70,7 @@ function ExecutorAgent(task: string, findings: string) -> string {
 }
 
 function CriticAgent(draft_reply: string, findings: string, original_request: string) -> string {
-  client GPT4oMini
+  client GPT6Luna
   prompt #"
     You are the CRITIC. Review the draft reply. Verify:
     1. It addresses the original parent request.
