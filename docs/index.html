@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nanny Agency AI Reliability Workshop</title>
+<meta name="description" content="A visual overview of the Nanny Agency AI Reliability Workshop: what you build, how it fits together, and the tech stack.">
+<style>
+  :root {
+    --paper: #F7F8F5;
+    --surface: #FFFFFF;
+    --surface-2: #EEF1EC;
+    --ink: #1F282E;
+    --ink-soft: #55636B;
+    --ink-faint: #8A969C;
+    --line: #D6DDD5;
+    --accent: #136A67;
+    --code-bg: #E9EDE7;
+
+    --nb1: #136A67;  --nb1-bg: #E0EEEB;
+    --nb2: #2B5FA3;  --nb2-bg: #E2EAF5;
+    --nb3: #94610A;  --nb3-bg: #F5EBD7;
+    --nb4: #6D4FA3;  --nb4-bg: #ECE6F5;
+    --jev: #A8473A;  --jev-bg: #F8E6E2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131A1D;
+      --surface: #1B2327;
+      --surface-2: #20292D;
+      --ink: #E3E8E6;
+      --ink-soft: #A6B2B0;
+      --ink-faint: #74807F;
+      --line: #334044;
+      --accent: #5FB3AC;
+      --code-bg: #263034;
+
+      --nb1: #5FB3AC;  --nb1-bg: #1A3233;
+      --nb2: #85AEE0;  --nb2-bg: #1C2A3D;
+      --nb3: #D9A84E;  --nb3-bg: #352A15;
+      --nb4: #B49CE0;  --nb4-bg: #2A2340;
+      --jev: #E59384;  --jev-bg: #3A2320;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131A1D;
+    --surface: #1B2327;
+    --surface-2: #20292D;
+    --ink: #E3E8E6;
+    --ink-soft: #A6B2B0;
+    --ink-faint: #74807F;
+    --line: #334044;
+    --accent: #5FB3AC;
+    --code-bg: #263034;
+
+    --nb1: #5FB3AC;  --nb1-bg: #1A3233;
+    --nb2: #85AEE0;  --nb2-bg: #1C2A3D;
+    --nb3: #D9A84E;  --nb3-bg: #352A15;
+    --nb4: #B49CE0;  --nb4-bg: #2A2340;
+    --jev: #E59384;  --jev-bg: #3A2320;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap > * { min-width: 0; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 56px 16px 96px; }
+  @media (min-width: 640px) { .wrap { padding: 72px 32px 112px; } }
+
+  a { color: var(--accent); text-underline-offset: 3px; }
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.88em;
+  }
+  code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+
+  .eyebrow {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 12px;
+  }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.12; margin: 0 0 18px; letter-spacing: -0.02em; max-width: 18ch; }
+  h2 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 10px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.08rem; margin: 0 0 6px; }
+  .lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 62ch; margin: 0 0 28px; }
+  section { margin-top: 88px; }
+  .section-lede { color: var(--ink-soft); max-width: 68ch; margin: 0 0 28px; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; padding: 0; list-style: none; }
+  .facts li {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 14px; font-size: 0.9rem; color: var(--ink-soft);
+  }
+  .facts strong { color: var(--ink); }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-block; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+    text-decoration: none; border: 1px solid var(--accent);
+  }
+  .btn.primary { background: var(--accent); color: var(--paper); }
+  .btn.ghost { color: var(--accent); }
+
+  /* Story strip */
+  .story {
+    display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+  }
+  @media (min-width: 760px) { .story { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; padding: 24px 28px; } }
+  .story .who { text-align: center; }
+  .story .who .big { font-size: 1.05rem; font-weight: 700; }
+  .story .who .small { color: var(--ink-soft); font-size: 0.9rem; }
+  .story .link { color: var(--ink-faint); font-size: 1.4rem; text-align: center; }
+  @media (max-width: 759px) { .story .link { transform: rotate(90deg); } }
+  .story .agency {
+    background: var(--accent); color: var(--paper); border-radius: 10px; padding: 14px 16px;
+  }
+  .story .agency .small { color: var(--paper); opacity: 0.85; }
+
+  /* Figures */
+  figure { margin: 0; }
+  .fig {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .fig svg { display: block; width: 100%; height: auto; }
+  .fig .arch { min-width: 900px; }
+  .fig .cascade { min-width: 640px; }
+  figcaption { color: var(--ink-soft); font-size: 0.92rem; margin-top: 12px; max-width: 80ch; }
+  .scroll-hint { display: none; color: var(--ink-faint); font-size: 0.82rem; margin: 0 0 8px; }
+  @media (max-width: 900px) { .scroll-hint { display: block; } }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; font-size: 0.88rem; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1.5px solid; }
+
+  /* SVG diagram styling */
+  .dg text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+  .dg .panel { fill: var(--surface-2); }
+  .dg .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+  .dg .t { fill: var(--ink); font-size: 13.5px; font-weight: 650; }
+  .dg .s { fill: var(--ink-soft); font-size: 11.5px; }
+  .dg .h { font-size: 11px; font-weight: 750; letter-spacing: 0.09em; }
+  .dg .m { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; font-size: 12px; fill: var(--ink); }
+  .dg .arrow { stroke: var(--ink-faint); stroke-width: 1.5; fill: none; }
+  .dg .dash { stroke-dasharray: 5 4; }
+  .dg .ah { fill: var(--ink-faint); }
+  .dg .actor { fill: var(--ink); }
+  .dg .actor-t { fill: var(--paper); font-size: 13px; font-weight: 650; }
+  .dg .c1 { fill: var(--nb1-bg); stroke: var(--nb1); stroke-width: 1.4; }
+  .dg .c2 { fill: var(--nb2-bg); stroke: var(--nb2); stroke-width: 1.4; }
+  .dg .c3 { fill: var(--nb3-bg); stroke: var(--nb3); stroke-width: 1.4; }
+  .dg .c4 { fill: var(--nb4-bg); stroke: var(--nb4); stroke-width: 1.4; }
+  .dg .cj { fill: var(--jev-bg); stroke: var(--jev); stroke-width: 1.6; }
+  .dg .k1 { fill: var(--nb1); } .dg .k2 { fill: var(--nb2); } .dg .k3 { fill: var(--nb3); }
+  .dg .k4 { fill: var(--nb4); } .dg .kj { fill: var(--jev); }
+  .dg .chip { fill: var(--surface); stroke: var(--nb2); stroke-width: 1; }
+  .dg .chip-soft { fill: var(--surface); stroke: var(--line); stroke-width: 1; }
+  .dg .xflow { stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; }
+  .dg .x1 { stroke: var(--nb1); } .dg .x3 { stroke: var(--nb3); }
+
+  /* Notebook cards */
+  .nbs { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 700px) { .nbs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .nb {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 22px 22px 20px; border-top: 5px solid var(--c); position: relative;
+  }
+  .nb .num {
+    font-size: 0.75rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c);
+    display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px;
+  }
+  .nb .num .time { color: var(--ink-faint); font-weight: 600; letter-spacing: 0.04em; text-transform: none; }
+  .nb p { color: var(--ink-soft); margin: 0 0 12px; font-size: 0.95rem; }
+  .nb ul { margin: 0 0 14px; padding-left: 18px; font-size: 0.93rem; }
+  .nb li { margin: 3px 0; }
+  .nb .file { font-size: 0.82rem; color: var(--ink-faint); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag {
+    font-size: 0.78rem; padding: 2px 9px; border-radius: 999px;
+    background: var(--cb); color: var(--c); font-weight: 600;
+  }
+  .n1 { --c: var(--nb1); --cb: var(--nb1-bg); }
+  .n2 { --c: var(--nb2); --cb: var(--nb2-bg); }
+  .n3 { --c: var(--nb3); --cb: var(--nb3-bg); }
+  .n4 { --c: var(--nb4); --cb: var(--nb4-bg); }
+  .nj { --c: var(--jev); --cb: var(--jev-bg); }
+
+  /* Criteria */
+  .criteria { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); counter-reset: crit; }
+  @media (min-width: 700px) { .criteria { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .crit {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+    counter-increment: crit;
+  }
+  .crit::before {
+    content: counter(crit); display: inline-grid; place-items: center; width: 26px; height: 26px;
+    border-radius: 50%; background: var(--nb3-bg); color: var(--nb3); font-weight: 750; font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  .crit p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+
+  /* Stack */
+  .stack { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 700px) { .stack { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1000px) { .stack { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .group {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 8px;
+  }
+  .group h3 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px; }
+  .tool { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .tool:first-of-type { border-top: 0; padding-top: 0; }
+  .tool .name { font-weight: 650; }
+  .tool .where { display: flex; gap: 4px; align-self: start; }
+  .tool .where span {
+    font-size: 0.7rem; font-weight: 750; padding: 1px 6px; border-radius: 4px; background: var(--cb); color: var(--c);
+  }
+  .tool .what { grid-column: 1 / -1; color: var(--ink-soft); font-size: 0.9rem; }
+
+  /* Repo map */
+  .two { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 860px) { .two { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); } }
+  .tree {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 0.86rem;
+    line-height: 1.75; overflow-x: auto;
+  }
+  .tree div { white-space: nowrap; }
+  .tree .d { color: var(--ink); font-weight: 650; }
+  .tree .c { color: var(--ink-faint); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.84rem; margin-left: 8px; }
+  .steps { margin: 0; padding: 0; list-style: none; counter-reset: st; }
+  .steps li { counter-increment: st; position: relative; padding: 0 0 18px 40px; }
+  .steps li::before {
+    content: counter(st); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: var(--paper); display: grid; place-items: center; font-size: 0.82rem; font-weight: 750;
+  }
+  .steps .t { font-weight: 650; }
+  .steps pre {
+    margin: 6px 0 0; background: var(--code-bg); border-radius: 8px; padding: 10px 12px; overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; font-size: 0.82rem; line-height: 1.5;
+  }
+  .steps p { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.92rem; }
+
+  footer { margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 0.88rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <header>
+    <p class="eyebrow">Hands-on workshop · 6 hours</p>
+    <h1>Building AI that a nanny agency can trust</h1>
+    <p class="lede">
+      You start with single LLM calls and end with a durable booking agent: one that you've evaluated against the
+      agency's own definition of "good", traced end to end, and wrapped in a human approval step.
+      Every example uses a fictional nanny agency that matches nannies with parents.
+    </p>
+    <ul class="facts">
+      <li><strong>4</strong> notebooks + a smoke test</li>
+      <li><strong>Python 3.11+</strong> · <code>uv</code></li>
+      <li>Runs on <strong>gpt-6-luna</strong></li>
+      <li>API spend <strong>under $5</strong>, usually under $1</li>
+      <li>No GPU needed</li>
+    </ul>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/ApurvaMisra/nanny-agency-workshop">Get the code on GitHub</a>
+      <a class="btn ghost" href="#architecture">See the architecture</a>
+    </div>
+  </header>
+
+  <!-- Scenario -->
+  <section id="scenario">
+    <p class="eyebrow">The scenario</p>
+    <h2>One agency, two kinds of customer</h2>
+    <p class="section-lede">
+      Parents write in with needs like "CPR-certified, weekends, handles nut allergies." Nannies come with résumés.
+      The agency's assistant has to match them, answer policy questions, and draft bookings. It must never leak
+      a nanny's phone number, give medical advice, or skip a parent's must-have requirement.
+    </p>
+    <div class="story">
+      <div class="who">
+        <div class="big">Parents</div>
+        <div class="small">intake forms · questions · booking requests</div>
+      </div>
+      <div class="link" aria-hidden="true">⇄</div>
+      <div class="who agency">
+        <div class="big">The agency assistant</div>
+        <div class="small">what you build in this workshop</div>
+      </div>
+      <div class="link" aria-hidden="true">⇄</div>
+      <div class="who">
+        <div class="big">Nannies</div>
+        <div class="small">résumés · certifications · availability</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section id="architecture">
+    <p class="eyebrow">Architecture</p>
+    <h2>How the pieces fit together</h2>
+    <p class="section-lede">
+      Notebook 1 turns raw documents into searchable data. Notebook 2 builds the agent that answers parents, and Notebook 4
+      makes it durable. Notebook 3 sits beside the agent and watches it: every call is traced, failures become evaluators,
+      and the evaluators run in CI and in production.
+    </p>
+    <figure>
+      <p class="scroll-hint">Scroll sideways to see the whole diagram →</p>
+      <div class="fig">
+        <svg class="dg arch" viewBox="0 0 1040 756" role="img" aria-labelledby="arch-title arch-desc">
+          <title id="arch-title">Workshop architecture</title>
+          <desc id="arch-desc">Three columns. Data and one-turn patterns: PDFs are extracted into Pydantic records, embedded, and stored in ChromaDB. Booking agent: a parent message passes an input guardrail, an intent classifier, a BAML ReAct loop with four tools, an output guardrail, then a Temporal workflow that waits for a manager's approval before sending the email exactly once. Evaluation: Phoenix traces feed error analysis, synthetic data, three kinds of evaluators including Jev, a CI gate and online monitoring, whose findings flow back as fixes. A model layer underneath holds gpt-6-luna, text-embedding-3-small and Jev.</desc>
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+            <marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="k1" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+            <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="k3" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+          </defs>
+
+          <!-- Column headers -->
+          <text class="h k1" x="20" y="26">NOTEBOOK 1 · DATA &amp; ONE-TURN</text>
+          <text class="h k2" x="280" y="26">NOTEBOOKS 2 + 4 · BOOKING AGENT</text>
+          <text class="h k3" x="740" y="26">NOTEBOOK 3 · EVALUATION</text>
+
+          <!-- Panels -->
+          <rect class="panel" x="20" y="40" width="220" height="624" rx="14"/>
+          <rect class="panel" x="280" y="40" width="420" height="624" rx="14"/>
+          <rect class="panel" x="740" y="40" width="280" height="624" rx="14"/>
+
+          <!-- ============ Data column ============ -->
+          <rect class="box c1" x="36" y="60" width="188" height="54" rx="9"/>
+          <text class="t" x="130" y="83" text-anchor="middle">10 PDFs</text>
+          <text class="s" x="130" y="101" text-anchor="middle">nanny résumés · parent intakes</text>
+          <line class="arrow" x1="130" y1="114" x2="130" y2="132" marker-end="url(#ah)"/>
+
+          <rect class="box" x="36" y="134" width="188" height="54" rx="9"/>
+          <text class="t" x="130" y="157" text-anchor="middle">Extract</text>
+          <text class="s" x="130" y="175" text-anchor="middle">pypdf → LLM → Pydantic</text>
+          <line class="arrow" x1="130" y1="188" x2="130" y2="206" marker-end="url(#ah)"/>
+
+          <rect class="box" x="36" y="208" width="188" height="54" rx="9"/>
+          <text class="t" x="130" y="231" text-anchor="middle">Embed</text>
+          <text class="s" x="130" y="249" text-anchor="middle">text-embedding-3-small</text>
+          <line class="arrow" x1="130" y1="262" x2="130" y2="280" marker-end="url(#ah)"/>
+
+          <rect class="box c1" x="36" y="282" width="188" height="54" rx="9"/>
+          <text class="t" x="130" y="305" text-anchor="middle">ChromaDB</text>
+          <text class="s" x="130" y="323" text-anchor="middle">semantic nanny matching</text>
+
+          <text class="h" x="36" y="366" fill="currentColor" style="fill: var(--ink-faint)">REFERENCE DATA</text>
+          <rect class="box" x="36" y="378" width="188" height="50" rx="9"/>
+          <text class="m" x="130" y="399" text-anchor="middle">seed_db.json</text>
+          <text class="s" x="130" y="416" text-anchor="middle">5 nannies · 5 parents</text>
+          <rect class="box" x="36" y="438" width="188" height="50" rx="9"/>
+          <text class="m" x="130" y="459" text-anchor="middle">agency_policies.md</text>
+          <text class="s" x="130" y="476" text-anchor="middle">booking &amp; safety rules</text>
+          <rect class="box" x="36" y="498" width="188" height="50" rx="9"/>
+          <text class="m" x="130" y="519" text-anchor="middle">memory.json</text>
+          <text class="s" x="130" y="536" text-anchor="middle">long-term parent memory</text>
+
+          <rect class="box c1" x="36" y="572" width="188" height="54" rx="9"/>
+          <text class="t" x="130" y="595" text-anchor="middle">One-turn prompts</text>
+          <text class="s" x="130" y="613" text-anchor="middle">emails · personalized wishes</text>
+
+          <!-- ============ Runtime column ============ -->
+          <rect class="actor" x="410" y="56" width="160" height="36" rx="18"/>
+          <text class="actor-t" x="490" y="79" text-anchor="middle">Parent message</text>
+          <line class="arrow" x1="490" y1="92" x2="490" y2="114" marker-end="url(#ah)"/>
+
+          <rect class="box" x="330" y="116" width="320" height="44" rx="9"/>
+          <text class="t" x="490" y="135" text-anchor="middle">Input guardrail</text>
+          <text class="s" x="490" y="151" text-anchor="middle">PII redaction · off-topic → human</text>
+          <line class="arrow" x1="490" y1="160" x2="490" y2="174" marker-end="url(#ah)"/>
+
+          <rect class="box" x="330" y="176" width="320" height="44" rx="9"/>
+          <text class="t" x="490" y="195" text-anchor="middle">Intent classifier</text>
+          <text class="s" x="490" y="211" text-anchor="middle">decides which tools the agent gets to see</text>
+          <line class="arrow" x1="490" y1="220" x2="490" y2="234" marker-end="url(#ah)"/>
+
+          <rect class="c2" x="300" y="236" width="380" height="172" rx="12"/>
+          <text class="t" x="316" y="258">ReAct loop · BAML <tspan class="m" style="font-size:12.5px">DecideWithTools</tspan></text>
+          <rect class="chip" x="316" y="270" width="170" height="28" rx="6"/>
+          <text class="m" x="401" y="288" text-anchor="middle">search_nannies</text>
+          <rect class="chip" x="494" y="270" width="170" height="28" rx="6"/>
+          <text class="m" x="579" y="288" text-anchor="middle">get_policy</text>
+          <rect class="chip" x="316" y="306" width="170" height="28" rx="6"/>
+          <text class="m" x="401" y="324" text-anchor="middle">check_availability</text>
+          <rect class="chip" x="494" y="306" width="170" height="28" rx="6"/>
+          <text class="m" x="579" y="324" text-anchor="middle">draft_email</text>
+          <rect class="chip-soft" x="316" y="346" width="81" height="26" rx="13"/>
+          <text class="s" x="356.5" y="363" text-anchor="middle">memory</text>
+          <rect class="chip-soft" x="405" y="346" width="81" height="26" rx="13"/>
+          <text class="s" x="445.5" y="363" text-anchor="middle">permissions</text>
+          <rect class="chip-soft" x="494" y="346" width="81" height="26" rx="13"/>
+          <text class="s" x="534.5" y="363" text-anchor="middle">context</text>
+          <rect class="chip-soft" x="583" y="346" width="81" height="26" rx="13"/>
+          <text class="s" x="623.5" y="363" text-anchor="middle">fallbacks</text>
+          <text class="s" x="490" y="395" text-anchor="middle">typed AgentStep: thought → tool call → observation, until finish</text>
+          <line class="arrow" x1="490" y1="408" x2="490" y2="422" marker-end="url(#ah)"/>
+
+          <rect class="box" x="330" y="424" width="320" height="44" rx="9"/>
+          <text class="t" x="490" y="443" text-anchor="middle">Output guardrail</text>
+          <text class="s" x="490" y="459" text-anchor="middle">medical · emergency → human</text>
+          <line class="arrow" x1="490" y1="468" x2="490" y2="484" marker-end="url(#ah)"/>
+
+          <rect class="c4" x="300" y="486" width="380" height="98" rx="12"/>
+          <text class="t" x="316" y="508">Temporal <tspan class="m" style="font-size:12.5px">BookingWorkflow</tspan></text>
+          <text class="s" x="664" y="508" text-anchor="end">survives worker restarts</text>
+          <rect class="box" x="316" y="520" width="100" height="50" rx="8"/>
+          <text class="t" x="366" y="541" text-anchor="middle">Draft</text>
+          <text class="s" x="366" y="558" text-anchor="middle">activities</text>
+          <line class="arrow" x1="416" y1="545" x2="438" y2="545" marker-end="url(#ah)"/>
+          <rect class="box" x="440" y="520" width="100" height="50" rx="8"/>
+          <text class="t" x="490" y="541" text-anchor="middle">Approval</text>
+          <text class="s" x="490" y="558" text-anchor="middle">signal + query</text>
+          <line class="arrow" x1="540" y1="545" x2="562" y2="545" marker-end="url(#ah)"/>
+          <rect class="box" x="564" y="520" width="100" height="50" rx="8"/>
+          <text class="t" x="614" y="541" text-anchor="middle">Send email</text>
+          <text class="s" x="614" y="558" text-anchor="middle">exactly once</text>
+
+          <line class="arrow" x1="490" y1="616" x2="490" y2="572" marker-end="url(#ah)"/>
+          <text class="s" x="500" y="600">approve / reject</text>
+          <rect class="actor" x="420" y="616" width="140" height="32" rx="16"/>
+          <text class="actor-t" x="490" y="637" text-anchor="middle">Agency manager</text>
+
+          <!-- ============ Evaluation column ============ -->
+          <rect class="box c3" x="756" y="60" width="248" height="54" rx="9"/>
+          <text class="t" x="880" y="83" text-anchor="middle">Phoenix traces</text>
+          <text class="s" x="880" y="101" text-anchor="middle">every BAML + OpenAI call</text>
+          <line class="arrow" x1="880" y1="114" x2="880" y2="132" marker-end="url(#ah)"/>
+
+          <rect class="box" x="756" y="134" width="248" height="54" rx="9"/>
+          <text class="t" x="880" y="157" text-anchor="middle">Error analysis</text>
+          <text class="s" x="880" y="175" text-anchor="middle">open + axial coding → failure taxonomy</text>
+          <line class="arrow" x1="880" y1="188" x2="880" y2="206" marker-end="url(#ah)"/>
+
+          <rect class="box" x="756" y="208" width="248" height="54" rx="9"/>
+          <text class="t" x="880" y="231" text-anchor="middle">Synthetic data</text>
+          <text class="s" x="880" y="249" text-anchor="middle">personas · edge cases · golden dataset</text>
+          <line class="arrow" x1="880" y1="262" x2="880" y2="280" marker-end="url(#ah)"/>
+
+          <rect class="c3" x="756" y="282" width="248" height="200" rx="12"/>
+          <text class="t" x="772" y="303">Evaluators</text>
+          <rect class="box" x="768" y="314" width="224" height="44" rx="8"/>
+          <text class="t" x="880" y="333" text-anchor="middle">Programmatic</text>
+          <text class="s" x="880" y="349" text-anchor="middle">PII · escalation · unsourced claims</text>
+          <rect class="box" x="768" y="366" width="224" height="44" rx="8"/>
+          <text class="t" x="880" y="385" text-anchor="middle">LLM judge</text>
+          <text class="s" x="880" y="401" text-anchor="middle">DSPy-optimized, checked vs labels</text>
+          <rect class="cj" x="768" y="418" width="224" height="52" rx="8"/>
+          <text class="t" x="880" y="439" text-anchor="middle">Jev · System One judge</text>
+          <text class="s" x="880" y="457" text-anchor="middle">typed verdicts · unsure → LLM</text>
+          <line class="arrow" x1="880" y1="482" x2="880" y2="496" marker-end="url(#ah)"/>
+
+          <rect class="box" x="756" y="498" width="248" height="54" rx="9"/>
+          <text class="t" x="880" y="521" text-anchor="middle">CI gate</text>
+          <text class="s" x="880" y="539" text-anchor="middle">pytest on the golden dataset</text>
+          <line class="arrow" x1="880" y1="552" x2="880" y2="566" marker-end="url(#ah)"/>
+
+          <rect class="box" x="756" y="568" width="248" height="54" rx="9"/>
+          <text class="t" x="880" y="591" text-anchor="middle">Online monitoring</text>
+          <text class="s" x="880" y="609" text-anchor="middle">fail-rate drift alerts</text>
+
+          <!-- ============ Cross-column flows ============ -->
+          <!-- ChromaDB feeds search_nannies -->
+          <path class="xflow x1" d="M224,309 C270,309 280,284 314,284" marker-end="url(#ah1)"/>
+          <!-- reference data feeds tools / memory -->
+          <path class="xflow x1" d="M224,463 C270,463 270,372 298,372" marker-end="url(#ah1)"/>
+          <!-- agent is traced -->
+          <path class="xflow x3" d="M682,300 C720,300 716,87 754,87" marker-end="url(#ah3)"/>
+          <!-- evaluation findings flow back as fixes -->
+          <path class="xflow x3" d="M754,525 C716,525 720,390 682,390" marker-end="url(#ah3)"/>
+
+          <!-- ============ Model layer ============ -->
+          <rect class="panel" x="20" y="680" width="1000" height="60" rx="12"/>
+          <text class="h" x="40" y="715" style="fill: var(--ink-faint)">MODELS</text>
+          <rect class="box" x="150" y="688" width="270" height="44" rx="8"/>
+          <text class="t" x="285" y="707" text-anchor="middle">gpt-6-luna</text>
+          <text class="s" x="285" y="723" text-anchor="middle">OpenAI · reasoning effort, not temperature</text>
+          <rect class="box" x="440" y="688" width="250" height="44" rx="8"/>
+          <text class="t" x="565" y="707" text-anchor="middle">text-embedding-3-small</text>
+          <text class="s" x="565" y="723" text-anchor="middle">OpenAI embeddings</text>
+          <rect class="cj" x="710" y="688" width="290" height="44" rx="8"/>
+          <text class="t" x="855" y="707" text-anchor="middle">jev-1.13.0</text>
+          <text class="s" x="855" y="723" text-anchor="middle">TypeSafe · System One, priced on input only</text>
+        </svg>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--nb1-bg);border-color:var(--nb1)"></i>Notebook 1</span>
+        <span><i style="background:var(--nb2-bg);border-color:var(--nb2)"></i>Notebook 2</span>
+        <span><i style="background:var(--nb3-bg);border-color:var(--nb3)"></i>Notebook 3</span>
+        <span><i style="background:var(--nb4-bg);border-color:var(--nb4)"></i>Notebook 4</span>
+        <span><i style="background:var(--jev-bg);border-color:var(--jev)"></i>Jev (optional)</span>
+      </div>
+      <figcaption>
+        Dashed lines cross columns. ChromaDB and the reference data back the agent's tools. Every agent step is traced
+        into Phoenix. What the evaluators find comes back as fixes to the agent.
+        For step-by-step agent diagrams, see the <a href="agent-flow.html">agent flow diagrams</a>.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- Notebooks -->
+  <section id="notebooks">
+    <p class="eyebrow">The arc</p>
+    <h2>Four notebooks, each building on the last</h2>
+    <p class="section-lede">
+      Each section starts by showing something going wrong, then adds the fix. By the end the reliability features are
+      stacked on top of each other, and you've seen each one fail without its fix first.
+    </p>
+    <div class="nbs">
+      <article class="nb n1">
+        <div class="num"><span>Notebook 1</span><span class="time">~75 min</span></div>
+        <h3>One-turn LLM patterns</h3>
+        <p>Single LLM calls, done well, before any agent exists.</p>
+        <ul>
+          <li>Prompted email generation and personalized birthday wishes</li>
+          <li>PDF résumés and intake forms → validated Pydantic records</li>
+          <li>Embeddings and nanny matching in ChromaDB, with an interactive UMAP map</li>
+        </ul>
+        <div class="tags"><span class="tag">OpenAI</span><span class="tag">Pydantic</span><span class="tag">pypdf</span><span class="tag">ChromaDB</span></div>
+        <div class="file mono">notebooks/01_one_turn.ipynb</div>
+      </article>
+      <article class="nb n2">
+        <div class="num"><span>Notebook 2</span><span class="time">~150 min</span></div>
+        <h3>Booking agent in BAML</h3>
+        <p>A parent-facing agent where each reliability feature is added in response to a failure you just watched happen.</p>
+        <ul>
+          <li>ReAct loop, multiple tools, progressive disclosure</li>
+          <li>Context management, short and long-term memory, permissions</li>
+          <li>Determinism and fallbacks</li>
+          <li>Planner → Researcher → Executor, and the five multi-agent failure modes</li>
+          <li>Input and output guardrails</li>
+        </ul>
+        <div class="tags"><span class="tag">BAML</span><span class="tag">Arize Phoenix</span><span class="tag">OpenTelemetry</span></div>
+        <div class="file mono">notebooks/02_agent.ipynb</div>
+      </article>
+      <article class="nb n3">
+        <div class="num"><span>Notebook 3</span><span class="time">~100 min</span></div>
+        <h3>Domain-aware evaluation</h3>
+        <p>Generic "helpfulness: 0.92" scores replaced with checks the agency actually cares about.</p>
+        <ul>
+          <li>Why vendor metrics miss the point, then open and axial error coding</li>
+          <li>Synthetic data across personas and edge cases, then a golden dataset</li>
+          <li>Programmatic evaluators and a DSPy-optimized LLM judge</li>
+          <li>Jev, a System One judge, with escalation to the LLM judge when it's unsure</li>
+          <li>Evals in CI and online drift monitoring</li>
+        </ul>
+        <div class="tags"><span class="tag">DSPy</span><span class="tag">Jev</span><span class="tag">pytest</span><span class="tag">Phoenix</span></div>
+        <div class="file mono">notebooks/03_evaluation.ipynb</div>
+      </article>
+      <article class="nb n4">
+        <div class="num"><span>Notebook 4</span><span class="time">extension</span></div>
+        <h3>Durable agent with Temporal</h3>
+        <p>The Notebook 2 agent as a workflow that can wait for a person and survive a crash.</p>
+        <ul>
+          <li>The agent loop as a workflow, with LLM calls and tools as activities</li>
+          <li>A human approval gate using a signal and a query</li>
+          <li>The confirmation email goes out exactly once, even on retries</li>
+          <li>Kill the worker mid-wait, restart it, and the booking carries on</li>
+        </ul>
+        <div class="tags"><span class="tag">Temporal</span><span class="tag">temporalio</span></div>
+        <div class="file mono">notebooks/04_durable_agent.ipynb</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- What good means -->
+  <section id="criteria">
+    <p class="eyebrow">What "reliable" means here</p>
+    <h2>The agency's four definitions of a good reply</h2>
+    <p class="section-lede">
+      Notebook 3's evaluators don't target a generic quality score. They target four criteria that came from
+      asking the agency owner what "good" looks like.
+    </p>
+    <div class="criteria">
+      <div class="crit"><h3>Understands constraints</h3><p>Pulls out must-haves like CPR, weekend availability and allergy handling, and respects them.</p></div>
+      <div class="crit"><h3>Matches the parent's tone</h3><p>Warm with an anxious first-time parent, brief and professional with a returning one.</p></div>
+      <div class="crit"><h3>Safe and compliant</h3><p>Keeps a nanny's address and phone number private until a booking is confirmed.</p></div>
+      <div class="crit"><h3>Knows when to escalate</h3><p>Hands medical, legal and off-topic questions to a person instead of answering them.</p></div>
+    </div>
+  </section>
+
+  <!-- Jev cascade -->
+  <section id="jev">
+    <p class="eyebrow">Spotlight · Notebook 3</p>
+    <h2>Fast judge first, slow judge only when unsure</h2>
+    <p class="section-lede">
+      Jev is a System One model: it doesn't generate text. You give it the parent's query, the agent's reply and some typed
+      questions, and one call returns calibrated probabilities. It answers the same way every time and costs a tiny
+      fraction of a cent, but it can't reason through a policy. So the notebook builds a cascade: Jev answers every check,
+      and only the answers it's unsure about go to an LLM judge.
+    </p>
+    <figure>
+      <div class="fig">
+        <svg class="dg cascade" viewBox="0 0 780 210" role="img" aria-labelledby="cas-title cas-desc">
+          <title id="cas-title">Jev cascade</title>
+          <desc id="cas-desc">The agent reply goes to Jev. If the probability of a failure is at least 0.7 the failure is accepted, at most 0.3 it is accepted as no failure, and in between the question goes to a gpt-6-luna judge. All three paths produce the verdict.</desc>
+          <defs>
+            <marker id="ahc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+            </marker>
+          </defs>
+          <rect class="box" x="10" y="80" width="130" height="50" rx="9"/>
+          <text class="t" x="75" y="101" text-anchor="middle">Agent reply</text>
+          <text class="s" x="75" y="118" text-anchor="middle">+ parent's query</text>
+          <line class="arrow" x1="140" y1="105" x2="178" y2="105" marker-end="url(#ahc)"/>
+
+          <rect class="cj" x="180" y="72" width="160" height="66" rx="10"/>
+          <text class="t" x="260" y="96" text-anchor="middle">Jev</text>
+          <text class="s" x="260" y="113" text-anchor="middle">typed yes/no questions,</text>
+          <text class="s" x="260" y="127" text-anchor="middle">one call per reply</text>
+
+          <path class="arrow" d="M340,105 C385,105 385,36 428,36" marker-end="url(#ahc)"/>
+          <line class="arrow" x1="340" y1="105" x2="428" y2="105" marker-end="url(#ahc)"/>
+          <path class="arrow" d="M340,105 C385,105 385,174 428,174" marker-end="url(#ahc)"/>
+          <text class="s" x="372" y="48" text-anchor="end">p ≥ 0.7</text>
+          <text class="s" x="392" y="98" text-anchor="middle">unsure</text>
+          <text class="s" x="372" y="172" text-anchor="end">p ≤ 0.3</text>
+
+          <rect class="box" x="430" y="12" width="200" height="48" rx="9"/>
+          <text class="t" x="530" y="32" text-anchor="middle">Failure present</text>
+          <text class="s" x="530" y="49" text-anchor="middle">accepted, no LLM call</text>
+          <rect class="c3" x="430" y="81" width="200" height="48" rx="9"/>
+          <text class="t" x="530" y="101" text-anchor="middle">LLM judge · System 2</text>
+          <text class="s" x="530" y="118" text-anchor="middle">gpt-6-luna, more effort</text>
+          <rect class="box" x="430" y="150" width="200" height="48" rx="9"/>
+          <text class="t" x="530" y="170" text-anchor="middle">No failure</text>
+          <text class="s" x="530" y="187" text-anchor="middle">accepted, no LLM call</text>
+
+          <path class="arrow" d="M630,36 C652,36 650,96 668,100" marker-end="url(#ahc)"/>
+          <line class="arrow" x1="630" y1="105" x2="668" y2="105" marker-end="url(#ahc)"/>
+          <path class="arrow" d="M630,174 C652,174 650,114 668,110" marker-end="url(#ahc)"/>
+          <rect class="actor" x="670" y="85" width="100" height="40" rx="20"/>
+          <text class="actor-t" x="720" y="110" text-anchor="middle">Verdict</text>
+        </svg>
+      </div>
+      <figcaption>
+        Jev handles narrow, typed verdicts: yes/no, a label, or a level on a scale. Checks that need reasoning, like applying
+        the escalation policy or checking claims against tool results, stay with the LLM judge. The Jev cells are optional
+        and skip themselves if there's no <code>TYPESAFE_API_KEY</code>.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- Tech stack -->
+  <section id="stack">
+    <p class="eyebrow">Tech stack</p>
+    <h2>What each tool is for</h2>
+    <p class="section-lede">Badges show which notebooks use each tool.</p>
+    <div class="stack">
+      <div class="group">
+        <h3>Models</h3>
+        <div class="tool"><span class="name">OpenAI gpt-6-luna</span><span class="where"><span class="n1">1</span><span class="n2">2</span><span class="n3">3</span><span class="n4">4</span></span>
+          <span class="what">Every generation and agent decision. Tuned with reasoning effort instead of temperature.</span></div>
+        <div class="tool"><span class="name">text-embedding-3-small</span><span class="where"><span class="n1">1</span><span class="n2">2</span></span>
+          <span class="what">Embeds nanny profiles for semantic matching.</span></div>
+        <div class="tool"><span class="name">TypeSafe Jev</span><span class="where"><span class="nj">3</span></span>
+          <span class="what">System One judge: typed verdicts with calibrated probabilities. Optional.</span></div>
+      </div>
+      <div class="group">
+        <h3>Structure &amp; agents</h3>
+        <div class="tool"><span class="name">BAML</span><span class="where"><span class="n2">2</span><span class="n4">4</span></span>
+          <span class="what">Typed LLM functions: agent steps, intent classification, planner, researcher, executor and critic roles.</span></div>
+        <div class="tool"><span class="name">Pydantic</span><span class="where"><span class="n1">1</span></span>
+          <span class="what">Validates records extracted from PDFs.</span></div>
+        <div class="tool"><span class="name">pypdf · reportlab</span><span class="where"><span class="n1">1</span></span>
+          <span class="what">Reads the PDFs. reportlab generated them in the first place.</span></div>
+      </div>
+      <div class="group">
+        <h3>Retrieval &amp; data</h3>
+        <div class="tool"><span class="name">ChromaDB</span><span class="where"><span class="n1">1</span><span class="n2">2</span></span>
+          <span class="what">Local vector store behind <code>search_nannies</code>.</span></div>
+        <div class="tool"><span class="name">pandas · plotly · UMAP</span><span class="where"><span class="n1">1</span><span class="n3">3</span></span>
+          <span class="what">Tables, the embedding map, and failure-analysis charts.</span></div>
+      </div>
+      <div class="group">
+        <h3>Observability &amp; evaluation</h3>
+        <div class="tool"><span class="name">Arize Phoenix</span><span class="where"><span class="n2">2</span><span class="n3">3</span></span>
+          <span class="what">OpenTelemetry traces of every BAML and OpenAI call. Falls back to a JSON trace logger if it can't start.</span></div>
+        <div class="tool"><span class="name">DSPy</span><span class="where"><span class="n3">3</span></span>
+          <span class="what">Optimizes the LLM judge's prompt against human-labeled examples.</span></div>
+        <div class="tool"><span class="name">pytest · nbmake</span><span class="where"><span class="n3">3</span></span>
+          <span class="what">Runs the evals as a CI gate, and smoke-tests every notebook.</span></div>
+      </div>
+      <div class="group">
+        <h3>Durability</h3>
+        <div class="tool"><span class="name">Temporal</span><span class="where"><span class="n4">4</span></span>
+          <span class="what">Workflows, activities, signals and queries. Needs <code>temporal server start-dev</code> running locally.</span></div>
+      </div>
+      <div class="group">
+        <h3>Tooling</h3>
+        <div class="tool"><span class="name">uv</span><span class="where"></span>
+          <span class="what">Installs dependencies from the lockfile.</span></div>
+        <div class="tool"><span class="name">Jupyter</span><span class="where"></span>
+          <span class="what">Where the whole workshop happens.</span></div>
+        <div class="tool"><span class="name">On-disk LLM cache</span><span class="where"></span>
+          <span class="what">Re-running a cell doesn't cost anything, which keeps the spend low.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Repo + setup -->
+  <section id="start">
+    <p class="eyebrow">Get started</p>
+    <h2>The repo, and how to run it</h2>
+    <div class="two">
+      <div class="tree" aria-label="Repository layout">
+        <div><span class="d">notebooks/</span><span class="c">00 smoke test + the four notebooks</span></div>
+        <div><span class="d">baml_src/</span><span class="c">agent, multi-agent and type schemas</span></div>
+        <div><span class="d">baml_client/</span><span class="c">generated from baml_src, gitignored</span></div>
+        <div><span class="d">src/nanny_workshop/</span><span class="c">shared helpers</span></div>
+        <div>&nbsp;&nbsp;agent.py<span class="c">react_run, MemoryStore, run_team</span></div>
+        <div>&nbsp;&nbsp;agent_tools.py<span class="c">the four agent tools</span></div>
+        <div>&nbsp;&nbsp;eval.py<span class="c">evaluators, judge, drift alert</span></div>
+        <div>&nbsp;&nbsp;temporal_booking.py<span class="c">BookingWorkflow + activities</span></div>
+        <div>&nbsp;&nbsp;chroma_client.py · pdf_loader.py · phoenix_setup.py</div>
+        <div><span class="d">data/</span><span class="c">PDFs, policies, seed DB, memory</span></div>
+        <div><span class="d">traces/</span><span class="c">12 reference traces with seeded failures</span></div>
+        <div><span class="d">scripts/</span><span class="c">data generators (already run)</span></div>
+        <div><span class="d">tests/</span><span class="c">pytest suite + notebook smoke checks</span></div>
+        <div><span class="d">docs/</span><span class="c">this page + agent flow diagrams</span></div>
+      </div>
+      <ol class="steps">
+        <li><span class="t">Clone and install</span>
+          <pre>git clone https://github.com/ApurvaMisra/nanny-agency-workshop
+cd nanny-agency-workshop
+uv sync --all-extras</pre></li>
+        <li><span class="t">Add your keys</span>
+          <pre>cp .env.example .env
+# set OPENAI_API_KEY (and optionally TYPESAFE_API_KEY)</pre></li>
+        <li><span class="t">Generate the BAML client</span>
+          <pre>uv run baml-cli generate --from baml_src</pre></li>
+        <li><span class="t">Run the smoke test</span>
+          <pre>uv run jupyter notebook notebooks/00_smoke_test.ipynb</pre>
+          <p>Every cell should print ✅ OK. For Notebook 4, also install the <code>temporal</code> CLI and run <code>temporal server start-dev</code>.</p></li>
+      </ol>
+    </div>
+    <p class="section-lede" style="margin-top:20px">
+      Full setup for macOS, Linux and Windows, with troubleshooting, is in
+      <a href="https://github.com/ApurvaMisra/nanny-agency-workshop/blob/main/SETUP.md">SETUP.md</a>.
+    </p>
+  </section>
+
+  <footer>
+    Nanny Agency AI Reliability Workshop ·
+    <a href="https://github.com/ApurvaMisra/nanny-agency-workshop">GitHub</a> ·
+    <a href="agent-flow.html">Agent flow diagrams</a> ·
+    <a href="https://careerdissection.com">careerdissection.com</a>
+  </footer>
+</div>
+</body>
+</html>
