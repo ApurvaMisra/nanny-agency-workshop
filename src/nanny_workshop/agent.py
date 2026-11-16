@@ -3,6 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from . import tracing
+
 
 @dataclass
 class AgentStepRecord:
@@ -42,33 +44,42 @@ def react_run(
     trace = AgentTrace(user_message=user_message)
     history_lines: list[str] = []
 
-    for _ in range(max_steps):
-        history = "\n".join(history_lines)
-        step = decide_fn(user_message=user_message, history=history)
+    # One AGENT span per run: the LLM decisions and TOOL spans below nest under it, so
+    # Phoenix shows the whole run as a single trace tree.
+    with tracing.agent_span("react_run", user_message) as run_span:
+        for _ in range(max_steps):
+            history = "\n".join(history_lines)
+            step = decide_fn(user_message=user_message, history=history)
 
-        name = step.tool_call.name
-        args = dict(step.tool_call.args or {})
-        record = AgentStepRecord(thought=step.thought, tool_name=name, tool_args=args)
+            name = step.tool_call.name
+            args = dict(step.tool_call.args or {})
+            record = AgentStepRecord(thought=step.thought, tool_name=name, tool_args=args)
 
-        if name == "finish":
-            record.final_answer = step.final_answer
+            if name == "finish":
+                record.final_answer = step.final_answer
+                trace.steps.append(record)
+                trace.final_answer = step.final_answer
+                tracing.set_output(run_span, step.final_answer)
+                return trace
+
+            with tracing.tool_span(name, args) as call_span:
+                tool = tools.get(name)
+                if tool is None:
+                    record.observation = f"<<error: unknown tool {name!r}>>"
+                    tracing.mark_error(call_span, "unknown tool")
+                else:
+                    try:
+                        record.observation = tool(**args)
+                    except Exception as e:  # noqa: BLE001
+                        record.observation = f"<<error: {type(e).__name__}: {e}>>"
+                        call_span.record_exception(e)
+                        tracing.mark_error(call_span, f"{type(e).__name__}: {e}")
+                tracing.set_output(call_span, record.observation)
+
             trace.steps.append(record)
-            trace.final_answer = step.final_answer
-            return trace
-
-        tool = tools.get(name)
-        if tool is None:
-            record.observation = f"<<error: unknown tool {name!r}>>"
-        else:
-            try:
-                record.observation = tool(**args)
-            except Exception as e:  # noqa: BLE001
-                record.observation = f"<<error: {type(e).__name__}: {e}>>"
-
-        trace.steps.append(record)
-        history_lines.append(f"Thought: {record.thought}")
-        history_lines.append(f"Action: {name}({args})")
-        history_lines.append(f"Observation: {record.observation}")
+            history_lines.append(f"Thought: {record.thought}")
+            history_lines.append(f"Action: {name}({args})")
+            history_lines.append(f"Observation: {record.observation}")
 
     return trace
 
@@ -116,23 +127,25 @@ def run_team(
     executor_fn(task, findings) -> str
     evidence_for_research(task) -> str (controller decides where to fetch evidence)
     """
-    plan = plan_fn(user_query=user_query)
-    findings: list = []
-    reply = ""
+    with tracing.agent_span("run_team", user_query) as team_span:
+        plan = plan_fn(user_query=user_query)
+        findings: list = []
+        reply = ""
 
-    research_count = 0
-    for step in plan.steps:
-        if step.agent == "researcher":
-            if research_count >= max_research_steps:
-                continue
-            evidence = evidence_for_research(step.task)
-            finding = research_fn(task=step.task, evidence_context=evidence)
-            findings.append(finding)
-            research_count += 1
-        elif step.agent == "executor":
-            finding_summaries = "\n".join(
-                f"- [{f.source}] {f.claim}: {f.excerpt}" for f in findings
-            ) or "(no findings yet)"
-            reply = executor_fn(task=step.task, findings=finding_summaries)
+        research_count = 0
+        for step in plan.steps:
+            if step.agent == "researcher":
+                if research_count >= max_research_steps:
+                    continue
+                evidence = evidence_for_research(step.task)
+                finding = research_fn(task=step.task, evidence_context=evidence)
+                findings.append(finding)
+                research_count += 1
+            elif step.agent == "executor":
+                finding_summaries = "\n".join(
+                    f"- [{f.source}] {f.claim}: {f.excerpt}" for f in findings
+                ) or "(no findings yet)"
+                reply = executor_fn(task=step.task, findings=finding_summaries)
 
+        tracing.set_output(team_span, reply)
     return {"plan": plan, "findings": findings, "reply": reply}

@@ -87,11 +87,14 @@ def start_phoenix() -> tuple[str, Callable[[], None]]:
         grpc_port = _find_free_port(start=_DEFAULT_GRPC_PORT)
         os.environ["PHOENIX_PORT"] = str(ui_port)
         os.environ["PHOENIX_GRPC_PORT"] = str(grpc_port)
-        os.environ["PHOENIX_COLLECTOR_ENDPOINT"] = f"http://localhost:{ui_port}"
 
         import phoenix as px
 
         session = px.launch_app()
+        # Set only AFTER launch: if it's present when launch_app() runs, Phoenix warns
+        # that "traces will be sent to the collector endpoint and not this app" —
+        # untrue here (it's the same app) but alarming in a workshop.
+        os.environ["PHOENIX_COLLECTOR_ENDPOINT"] = f"http://localhost:{ui_port}"
         # Export over OTLP-HTTP to the port we just launched on, so trace delivery
         # never depends on the default gRPC :4317 being the one we're using.
         register(
