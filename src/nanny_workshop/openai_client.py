@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from openai import OpenAI
 
+from . import tracing
+
 
 class CachedOpenAI:
     """Wraps openai.OpenAI; caches completions and embeddings on disk by key.
@@ -40,7 +42,9 @@ class CachedOpenAI:
         }
         cache_file = self._cache_path("chat", payload)
         if use_cache and cache_file.exists():
-            return json.loads(cache_file.read_text())["content"]
+            content = json.loads(cache_file.read_text())["content"]
+            tracing.record_cached_completion(model, messages, content)
+            return content
 
         # Reasoning models reject temperature/top_p unless reasoning_effort="none", so both are optional.
         kwargs = {"model": model, "messages": messages}
@@ -64,7 +68,9 @@ class CachedOpenAI:
         payload = {"model": model, "text": text}
         cache_file = self._cache_path("embed", payload)
         if use_cache and cache_file.exists():
-            return json.loads(cache_file.read_text())["embedding"]
+            vec = json.loads(cache_file.read_text())["embedding"]
+            tracing.record_cached_embedding(model, text)
+            return vec
 
         resp = self._client.embeddings.create(model=model, input=text)
         vec = resp.data[0].embedding
